@@ -36,6 +36,9 @@ import type {
   ShopInfo,
 } from "./types";
 import { seedProducts, eCentricLogo, demoAccounts, initialComments } from "./mockData";
+import Card from "./components/Card";
+import StatusPill from "./components/StatusPill";
+import ProductThumb from "./components/ProductThumb";
 
 type SessionState = "draft" | "created" | "scheduled" | "live" | "ended";
 type ActiveTab = "overview" | "products" | "comments";
@@ -76,18 +79,6 @@ type ShopInfo = {
   region: string;
   mode: string;
 };
-
-function ProductThumb({ darkMode }: { darkMode: boolean }) {
-  return (
-    <div
-      className={`h-14 w-14 rounded-xl shadow-inner ${
-        darkMode
-          ? "bg-gradient-to-br from-cyan-300 to-blue-500"
-          : "bg-gradient-to-br from-[#2C3DA6]/30 to-[#EF7CAF]/50"
-      }`}
-    />
-  );
-}
 
 function AppShell({ darkMode, children }: { darkMode: boolean; children: React.ReactNode }) {
   return (
@@ -242,25 +233,6 @@ function Sidebar({ activeTab, setActiveTab, shopInfo, darkMode, setDarkMode, cur
         })}
       </div>
     </aside>
-  );
-}
-
-function StatusPill({ state }: { state: SessionState }) {
-  const map = {
-    draft: "bg-slate-600 text-white",
-    created: "bg-green-600 text-white",
-    scheduled: "bg-sky-600 text-white",
-    live: "bg-amber-500 text-white",
-    ended: "bg-red-600 text-white",
-  };
-  return <span className={`rounded-full px-3 py-1 text-sm font-semibold ${map[state]}`}>{state.toUpperCase()}</span>;
-}
-
-function Card({ darkMode, children, className = "" }) {
-  return (
-    <section className={`rounded-3xl border p-6 shadow-2xl backdrop-blur ${darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white/80"} ${className}`}>
-      {children}
-    </section>
   );
 }
 
