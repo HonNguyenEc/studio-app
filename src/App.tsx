@@ -15,18 +15,7 @@ import LoginScreen from "./components/LoginScreen";
 import OverviewTab from "./components/OverviewTab";
 import ProductsTab from "./components/ProductsTab";
 import CommentsTab from "./components/CommentsTab";
-
-function AppShell({ darkMode, children }: { darkMode: boolean; children: React.ReactNode }) {
-  return (
-    <div
-      className={darkMode
-        ? "min-h-screen bg-[radial-gradient(circle_at_top,_#121826,_#06080d_50%)] text-white"
-        : "min-h-screen bg-[radial-gradient(circle_at_top,_#ffffff,_#eef2ff_55%)] text-slate-900"}
-    >
-      {children}
-    </div>
-  );
-}
+import AppShell from "./components/AppShell";
 
 export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(true);
