@@ -10,6 +10,7 @@ type DemoAccount = {
 };
 
 type LoginScreenProps = {
+  isLoggingIn: boolean;
   darkMode: boolean;
   setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
   loginForm: { email: string; password: string };
@@ -21,6 +22,7 @@ type LoginScreenProps = {
 };
 
 export default function LoginScreen({
+  isLoggingIn,
   darkMode,
   setDarkMode,
   loginForm,
@@ -89,9 +91,15 @@ export default function LoginScreen({
                 </div>
               ) : null}
 
-              <button onClick={onLogin} className="rounded-2xl bg-[#2C3DA6] px-5 py-4 text-base font-semibold text-white shadow-lg hover:opacity-95">
-                Login to Demo Portal
-              </button>
+                <button
+                onClick={onLogin}
+                disabled={isLoggingIn}
+                className={`rounded-2xl px-5 py-4 text-base font-semibold text-white shadow-lg ${
+                    isLoggingIn ? "cursor-not-allowed bg-[#2C3DA6]/60" : "bg-[#2C3DA6] hover:opacity-95"
+                }`}
+                >
+                {isLoggingIn ? "Logging in..." : "Login to Demo Portal"}
+                </button>
             </div>
           </div>
 

@@ -5,6 +5,10 @@ import StatusPill from "./StatusPill";
 import type { SessionState, Product, LogItem, ShopInfo, DemoAccount } from "../types";
 
 type OverviewTabProps = {
+  isCreatingSession: boolean;
+  isGeneratingUrl: boolean;
+  isStartingStream: boolean;
+  isEndingStream: boolean;
   coverPreview: string;
   onCoverChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   sessionState: SessionState;
@@ -28,6 +32,10 @@ type OverviewTabProps = {
 };
 
 export default function OverviewTab({
+  isCreatingSession,
+  isGeneratingUrl,
+  isStartingStream,
+  isEndingStream,
   coverPreview,
   onCoverChange,
   sessionState,
@@ -182,55 +190,63 @@ export default function OverviewTab({
               </button>
               <button
                 onClick={onCreateSession}
-                disabled={!coverPreview || !(sessionState === "draft" || sessionState === "ended")}
+                disabled={
+                  isCreatingSession ||
+                  !coverPreview ||
+                  !(sessionState === "draft" || sessionState === "ended")
+                }
                 className={`rounded-2xl px-4 py-4 text-base font-semibold text-white shadow-lg transition ${
-                  !coverPreview || !(sessionState === "draft" || sessionState === "ended")
+                  isCreatingSession || !coverPreview || !(sessionState === "draft" || sessionState === "ended")
                     ? darkMode
                       ? "cursor-not-allowed bg-green-900/35 text-white/40"
                       : "cursor-not-allowed bg-green-200 text-white/70"
                     : "bg-green-600/90 hover:bg-green-600"
                 }`}
               >
-                {sessionState === "ended" ? "Create New Session" : "Create Session"}
+                {isCreatingSession
+                  ? "Creating..."
+                  : sessionState === "ended"
+                    ? "Create New Session"
+                    : "Create Session"}
               </button>
               <button
                 onClick={onGenerateUrl}
-                disabled={sessionState === "draft"}
+                disabled={isGeneratingUrl || sessionState === "draft"}
                 className={`rounded-2xl px-4 py-4 text-base font-semibold text-white shadow-lg transition ${
-                  sessionState === "draft"
+                  isGeneratingUrl || sessionState === "draft"
                     ? darkMode
                       ? "cursor-not-allowed bg-purple-900/35 text-white/40"
                       : "cursor-not-allowed bg-purple-200 text-white/70"
                     : "bg-[#2C3DA6]/90 hover:bg-[#2C3DA6]"
                 }`}
               >
-                Stream URL
+                {isGeneratingUrl ? "Generating..." : "Stream URL"}
               </button>
               <button
                 onClick={onStartStream}
-                disabled={!(sessionState === "created" || sessionState === "scheduled")}
+                disabled={isStartingStream || !(sessionState === "created" || sessionState === "scheduled")}
                 className={`rounded-2xl px-4 py-4 text-base font-semibold text-white shadow-lg transition ${
-                  !(sessionState === "created" || sessionState === "scheduled")
+                  isStartingStream || !(sessionState === "created" || sessionState === "scheduled")
                     ? darkMode
                       ? "cursor-not-allowed bg-amber-900/35 text-white/40"
                       : "cursor-not-allowed bg-amber-200 text-white/70"
                     : "bg-[#EF7CAF]/90 hover:bg-[#EF7CAF]"
                 }`}
               >
-                Start Stream
+                {isStartingStream ? "Starting..." : "Start Stream"}
               </button>
               <button
                 onClick={onEndStream}
-                disabled={sessionState !== "live"}
+                disabled={isEndingStream || sessionState !== "live"}
                 className={`rounded-2xl px-4 py-4 text-base font-semibold text-white shadow-lg transition ${
-                  sessionState !== "live"
+                  isEndingStream || sessionState !== "live"
                     ? darkMode
                       ? "cursor-not-allowed bg-red-900/35 text-white/40"
                       : "cursor-not-allowed bg-red-200 text-white/70"
                     : "bg-red-600/90 hover:bg-red-600"
                 }`}
               >
-                End Stream
+                {isEndingStream ? "Ending..." : "End Stream"}
               </button>
             </div>
 
@@ -344,162 +360,5 @@ export default function OverviewTab({
         </div>
       </Card>
     </div>
-  );
-}
-
-function ProductsTab({ darkMode, products, selectedProducts, toggleProduct, applySet, visibleProductId, showProduct, removeProduct, addProduct, appliedProductIds, allSelected, handleSelectAllProducts }) {
-  return (
-    <Card darkMode={darkMode}>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>Product Management</div>
-          <div className={`mt-1 text-sm ${darkMode ? "text-white/50" : "text-slate-500"}`}>Select products, apply the set, and choose what will be shown during livestream.</div>
-          <div className={`mt-2 text-xs ${darkMode ? "text-white/45" : "text-slate-500"}`}>
-            Applied set: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{appliedProductIds.length} product(s)</span>
-          </div>
-          <div className={`mt-2 text-xs ${darkMode ? "text-white/45" : "text-slate-500"}`}>
-            Status legend: <span className="font-semibold text-green-500">SELECTED</span> · <span className="font-semibold text-sky-500">APPLIED</span> · <span className="font-semibold text-pink-500">VISIBLE</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="mb-4 flex flex-wrap items-center gap-3">
-        <button
-          onClick={handleSelectAllProducts}
-          className={`rounded-2xl px-4 py-3 text-sm font-semibold shadow-lg transition ${darkMode ? "bg-white/10 text-white hover:bg-white/15" : "bg-slate-100 text-slate-700 hover:bg-slate-200"}`}
-        >
-          {allSelected ? "Clear All" : "Select All"}
-        </button>
-        <div className={`text-sm ${darkMode ? "text-white/55" : "text-slate-500"}`}>
-          {selectedProducts.length} / {products.length} selected
-        </div>
-      </div>
-
-      <div className="mb-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <button onClick={addProduct} className="rounded-2xl bg-[#2C3DA6] px-4 py-4 text-lg font-semibold text-white shadow-lg">
-          <span className="inline-flex items-center gap-2"><Plus className="h-5 w-5" /> Add Products</span>
-        </button>
-        <button onClick={applySet} className="rounded-2xl bg-green-600 px-4 py-4 text-lg font-semibold text-white shadow-lg">Apply Set</button>
-        <button onClick={() => selectedProducts[0] && showProduct(selectedProducts[0])} className="rounded-2xl bg-[#EF7CAF] px-4 py-4 text-lg font-semibold text-white shadow-lg">Show Product</button>
-        <button
-          onClick={() => removeProduct()}
-          disabled={!visibleProductId && selectedProducts.length === 0}
-          className={`rounded-2xl px-4 py-4 text-lg font-semibold text-white shadow-lg transition ${
-            !visibleProductId && selectedProducts.length === 0
-              ? "cursor-not-allowed bg-red-300/70"
-              : "bg-red-600"
-          }`}
-        >
-          <span className="inline-flex items-center gap-2"><Trash2 className="h-5 w-5" /> Remove Product</span>
-        </button>
-      </div>
-
-      <div className={`overflow-hidden rounded-3xl border ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white"}`}>
-        <table className={`min-w-full text-left ${darkMode ? "text-white" : "text-slate-900"}`}>
-          <thead className={`border-b text-lg ${darkMode ? "border-white/10 text-white/90" : "border-slate-200 text-slate-700"}`}>
-            <tr>
-              <th className="px-6 py-5">Select</th>
-              <th className="px-6 py-5">Image</th>
-              <th className="px-6 py-5">Name</th>
-              <th className="px-6 py-5">Price</th>
-              <th className="px-6 py-5">Stock</th>
-              <th className="px-6 py-5">Status</th>
-              <th className="px-6 py-5">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((p) => {
-              const selected = selectedProducts.includes(p.id);
-              const applied = appliedProductIds.includes(p.id);
-              const visible = visibleProductId === p.id;
-              return (
-                <tr key={p.id} className={darkMode ? "border-b border-white/10 last:border-none" : "border-b border-slate-200 last:border-none"}>
-                  <td className="px-6 py-5">
-                    <input type="checkbox" checked={selected} onChange={() => toggleProduct(p.id)} className="h-5 w-5 rounded" />
-                  </td>
-                  <td className="px-6 py-5"><ProductThumb darkMode={darkMode} /></td>
-                  <td className="px-6 py-5 text-xl font-medium">{p.name}</td>
-                  <td className="px-6 py-5 text-xl">${p.price.toFixed(2)}</td>
-                  <td className="px-6 py-5 text-xl">{p.stock}</td>
-                  <td className="px-6 py-5">
-                    <div className="flex flex-wrap gap-2">
-                      {visible ? (
-                        <span className="rounded-full bg-[#EF7CAF] px-3 py-1 text-xs font-semibold text-white">VISIBLE</span>
-                      ) : null}
-                      {applied ? (
-                        <span className="rounded-full bg-sky-600 px-3 py-1 text-xs font-semibold text-white">APPLIED</span>
-                      ) : null}
-                      {selected ? (
-                        <span className="rounded-full bg-green-600 px-3 py-1 text-xs font-semibold text-white">SELECTED</span>
-                      ) : null}
-                      {!visible && !applied && !selected ? (
-                        <span className={`rounded-full px-3 py-1 text-xs font-semibold text-white ${darkMode ? "bg-slate-600" : "bg-slate-400"}`}>IDLE</span>
-                      ) : null}
-                    </div>
-                  </td>
-                  <td className="px-6 py-5">
-                    <button onClick={() => showProduct(p.id)} className={`rounded-xl border px-4 py-2 text-sm font-medium ${darkMode ? "border-white/10 bg-white/5 text-white hover:bg-white/10" : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"}`}>
-                      Show
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-}
-
-function CommentsTab({ darkMode, comments, draftComment, setDraftComment, sendComment, refreshComments, autoRefresh, setAutoRefresh, currentUser }) {
-  return (
-    <Card darkMode={darkMode}>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>Comments</div>
-          <div className={`mt-1 text-sm ${darkMode ? "text-white/50" : "text-slate-500"}`}>Real-time comments can be connected after official API approval.</div>
-          <div className={`mt-2 text-xs ${darkMode ? "text-white/45" : "text-slate-500"}`}>Posting as: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{currentUser?.name}</span></div>
-        </div>
-
-        <label className={`inline-flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium ${darkMode ? "border-white/10 bg-slate-900/40 text-white" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
-          <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} className="h-4 w-4 rounded" />
-          Auto refresh every 5s
-        </label>
-      </div>
-
-      <div className={`rounded-3xl border p-6 ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white"}`}>
-        <label className={`mb-3 block text-2xl font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>Post Comment</label>
-        <textarea
-          value={draftComment}
-          onChange={(e) => setDraftComment(e.target.value)}
-          placeholder="Type a comment..."
-          className={`min-h-[140px] w-full rounded-2xl border p-4 text-lg outline-none ${darkMode ? "border-white/10 bg-slate-900/40 text-white placeholder:text-white/40" : "border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400"}`}
-        />
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button onClick={sendComment} className="rounded-2xl bg-[#2C3DA6] px-6 py-4 text-lg font-semibold text-white shadow-lg">Send Comment</button>
-          <button onClick={refreshComments} className="rounded-2xl bg-[#EF7CAF] px-6 py-4 text-lg font-semibold text-white shadow-lg">
-            <span className="inline-flex items-center gap-2"><RefreshCw className="h-5 w-5" /> Refresh Comments</span>
-          </button>
-        </div>
-
-        <div className="mt-8 space-y-3">
-          {comments.length === 0 ? (
-            <div className={`text-lg ${darkMode ? "text-white/50" : "text-slate-500"}`}>No comments yet.</div>
-          ) : (
-            comments.slice().reverse().map((c) => (
-              <div key={c.id} className={`rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-slate-900/50" : "border-slate-200 bg-slate-50"}`}>
-                <div className="flex items-center justify-between gap-4">
-                  <div className={`text-sm ${darkMode ? "text-white/60" : "text-slate-500"}`}>@{c.user}</div>
-                  <div className={`text-xs ${darkMode ? "text-white/40" : "text-slate-400"}`}>{c.time}</div>
-                </div>
-                <div className={`mt-2 text-lg ${darkMode ? "text-white" : "text-slate-900"}`}>{c.text}</div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </Card>
   );
 }

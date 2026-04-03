@@ -4,6 +4,8 @@ import Card from "./Card";
 import type { CommentItem, DemoAccount } from "../types";
 
 type CommentsTabProps = {
+  isRefreshingComments: boolean;
+  isSendingComment: boolean;
   darkMode: boolean;
   comments: CommentItem[];
   draftComment: string;
@@ -16,6 +18,8 @@ type CommentsTabProps = {
 };
 
 export default function CommentsTab({
+  isRefreshingComments,
+  isSendingComment,
   darkMode,
   comments,
   draftComment,
@@ -88,17 +92,23 @@ export default function CommentsTab({
         <div className="mt-6 flex flex-wrap gap-3">
           <button
             onClick={sendComment}
-            className="rounded-2xl bg-[#2C3DA6] px-6 py-4 text-lg font-semibold text-white shadow-lg"
-          >
-            Send Comment
+            disabled={isSendingComment}
+            className={`rounded-2xl px-6 py-4 text-lg font-semibold text-white shadow-lg ${
+                isSendingComment ? "cursor-not-allowed bg-[#2C3DA6]/60" : "bg-[#2C3DA6]"
+            }`}
+            >
+            {isSendingComment ? "Sending..." : "Send Comment"}
           </button>
 
           <button
             onClick={refreshComments}
-            className="rounded-2xl bg-[#EF7CAF] px-6 py-4 text-lg font-semibold text-white shadow-lg"
-          >
+            disabled={isRefreshingComments}
+            className={`rounded-2xl px-6 py-4 text-lg font-semibold text-white shadow-lg ${
+                isRefreshingComments ? "cursor-not-allowed bg-[#EF7CAF]/60" : "bg-[#EF7CAF]"
+            }`}
+            >
             <span className="inline-flex items-center gap-2">
-              <RefreshCw className="h-5 w-5" /> Refresh Comments
+                <RefreshCw className="h-5 w-5" /> {isRefreshingComments ? "Refreshing..." : "Refresh Comments"}
             </span>
           </button>
         </div>

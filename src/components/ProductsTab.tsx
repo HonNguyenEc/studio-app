@@ -4,6 +4,8 @@ import ProductThumb from "./ProductThumb";
 import type { Product } from "../types";
 
 type ProductsTabProps = {
+  isAddingProduct: boolean;
+  isApplyingSet: boolean;
   darkMode: boolean;
   products: Product[];
   selectedProducts: number[];
