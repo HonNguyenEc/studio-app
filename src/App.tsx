@@ -18,39 +18,51 @@ import CommentsTab from "./components/CommentsTab";
 import AppShell from "./components/AppShell";
 
 export default function App() {
+  // UI state
   const [darkMode, setDarkMode] = useState<boolean>(true);
-const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
-const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-const [loginForm, setLoginForm] = useState<{ email: string; password: string }>({
-  email: demoAccounts[0].email,
-  password: demoAccounts[0].password,
-});
-const [loginError, setLoginError] = useState<string>("");
-const [currentUser, setCurrentUser] = useState<DemoAccount>(demoAccounts[0]);
-const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
-const [sessionState, setSessionState] = useState<SessionState>("draft");
-const [sessionLifecycleState, setSessionLifecycleState] = useState<SessionState>("draft");
-const [coverPreview, setCoverPreview] = useState<string>("");
-const [streamUrl, setStreamUrl] = useState<string>("");
-const [products, setProducts] = useState<Product[]>(seedProducts.slice(0, 5));
-const [hiddenProducts, setHiddenProducts] = useState<Product[]>(seedProducts.slice(5));
-const [shopInfo] = useState<ShopInfo>({
-  name: "eCentric Demo Store",
-  id: "VN_SHOP_2401",
-  region: "Vietnam",
-  mode: "Demo / Mock API",
-});
-const [selectedProducts, setSelectedProducts] = useState<number[]>([1, 2]);
-const [allSelected, setAllSelected] = useState<boolean>(false);
-const [appliedProductIds, setAppliedProductIds] = useState<number[]>([1, 2]);
-const [visibleProductId, setVisibleProductId] = useState<number | null>(null);
-const [comments, setComments] = useState<CommentItem[]>(initialComments);
-const [draftComment, setDraftComment] = useState<string>("");
-const [logs, setLogs] = useState<LogItem[]>([]);
-const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
-const [scheduleStart, setScheduleStart] = useState<string>("");
-const [scheduleEnd, setScheduleEnd] = useState<string>("");
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+  const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
 
+  // Auth state
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [loginForm, setLoginForm] = useState<{ email: string; password: string }>({
+    email: demoAccounts[0].email,
+    password: demoAccounts[0].password,
+  });
+  const [loginError, setLoginError] = useState<string>("");
+  const [currentUser, setCurrentUser] = useState<DemoAccount>(demoAccounts[0]);
+
+  // Session state
+  const [sessionState, setSessionState] = useState<SessionState>("draft");
+  const [sessionLifecycleState, setSessionLifecycleState] = useState<SessionState>("draft");
+  const [coverPreview, setCoverPreview] = useState<string>("");
+  const [streamUrl, setStreamUrl] = useState<string>("");
+  const [scheduleStart, setScheduleStart] = useState<string>("");
+  const [scheduleEnd, setScheduleEnd] = useState<string>("");
+
+  // Product state
+  const [products, setProducts] = useState<Product[]>(seedProducts.slice(0, 5));
+  const [hiddenProducts, setHiddenProducts] = useState<Product[]>(seedProducts.slice(5));
+  const [selectedProducts, setSelectedProducts] = useState<number[]>([1, 2]);
+  const [allSelected, setAllSelected] = useState<boolean>(false);
+  const [appliedProductIds, setAppliedProductIds] = useState<number[]>([1, 2]);
+  const [visibleProductId, setVisibleProductId] = useState<number | null>(null);
+
+  // Comment and log state
+  const [comments, setComments] = useState<CommentItem[]>(initialComments);
+  const [draftComment, setDraftComment] = useState<string>("");
+  const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
+  const [logs, setLogs] = useState<LogItem[]>([]);
+
+  // Static shop info
+  const [shopInfo] = useState<ShopInfo>({
+    name: "eCentric Demo Store",
+    id: "VN_SHOP_2401",
+    region: "Vietnam",
+    mode: "Demo / Mock API",
+  });
+
+  // Schedule helpers
   const parseScheduleValue = (value: string): Date | null => {
     if (!value) return null;
     const dt = new Date(value);
@@ -64,6 +76,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     return end <= start;
   })();
 
+  // Auto-generate mock comments
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
@@ -88,6 +101,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     return () => clearInterval(interval);
   }, [autoRefresh]);
 
+  // Session timer: auto-start and auto-end by schedule
   useEffect(() => {
     const start = parseScheduleValue(scheduleStart);
     const end = parseScheduleValue(scheduleEnd);
@@ -113,6 +127,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     return () => clearInterval(timer);
   }, [sessionState, scheduleStart, scheduleEnd]);
 
+    // Auth handlers
   const handleLogin = () => {
     const matched = demoAccounts.find(
       (acc) => acc.email === loginForm.email.trim() && acc.password === loginForm.password
@@ -133,6 +148,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     setActiveTab("overview");
   };
 
+  // Shared helpers
   const addLog = (action: string, detail: string) => {
     setLogs((prev) => [
       ...prev,
@@ -145,6 +161,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     ]);
   };
 
+  // Session handlers
   const onCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -213,6 +230,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     addLog("Stream ended", "Session moved to ENDED state.");
   };
 
+  // Product handlers
   const toggleProduct = (id: number) => {
     setSelectedProducts((prev) => {
       const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
@@ -278,6 +296,7 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     addLog("Product removed", `${product?.name || `#${targetId}`} removed from current demo selection.`);
   };
 
+  // Comment handlers
   const sendComment = () => {
     if (!draftComment.trim()) return;
     setComments((prev) => [
@@ -312,25 +331,26 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
     addLog("Comments refreshed", "Pulled 1 mock comment from demo source.");
   };
 
+  // Derived data
   const selectedProductObjects = useMemo(
     () => products.filter((p) => selectedProducts.includes(p.id)),
     [products, selectedProducts]
   );
 
-  if (!isAuthenticated) {
-  return (
-    <LoginScreen
-      darkMode={darkMode}
-      setDarkMode={setDarkMode}
-      loginForm={loginForm}
-      setLoginForm={setLoginForm}
-      onLogin={handleLogin}
-      loginError={loginError}
-      demoAccounts={demoAccounts}
-      logoSrc={eCentricLogo}
-    />
-  );
-}
+    if (!isAuthenticated) {
+    return (
+      <LoginScreen
+        darkMode={darkMode}
+        setDarkMode={setDarkMode}
+        loginForm={loginForm}
+        setLoginForm={setLoginForm}
+        onLogin={handleLogin}
+        loginError={loginError}
+        demoAccounts={demoAccounts}
+        logoSrc={eCentricLogo}
+      />
+    );
+  }
 
   return (
     <AppShell darkMode={darkMode}>
