@@ -1,3 +1,19 @@
+import { loginWithDemoAccount } from "./services/authService";
+import {
+  createMockSession,
+  generateMockStreamUrl,
+  startMockStream,
+  endMockStream,
+} from "./services/livestreamService";
+import {
+  selectAllProducts,
+  addMockProduct,
+  applyProductSet,
+} from "./services/productService";
+import {
+  createManualComment,
+  getMockIncomingComment,
+} from "./services/commentService";
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import type {
@@ -80,22 +96,9 @@ export default function App() {
   useEffect(() => {
     if (!autoRefresh) return;
     const interval = setInterval(() => {
-      const mock = [
-        "Còn voucher không shop?",
-        "Cho xin mã giảm giá với ạ",
-        "Mẫu này có màu đen không?",
-        "Có freeship không ạ?",
-      ];
-      const text = mock[Math.floor(Math.random() * mock.length)];
-      setComments((prev) => [
-        ...prev,
-        {
-          id: Date.now() + Math.random(),
-          user: `viewer_${Math.floor(Math.random() * 100)}`,
-          text,
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        },
-      ]);
+      getMockIncomingComment().then((comment) => {
+        setComments((prev) => [...prev, comment]);
+      });
     }, 5000);
 
     return () => clearInterval(interval);
@@ -128,20 +131,22 @@ export default function App() {
   }, [sessionState, scheduleStart, scheduleEnd]);
 
     // Auth handlers
-  const handleLogin = () => {
-    const matched = demoAccounts.find(
-      (acc) => acc.email === loginForm.email.trim() && acc.password === loginForm.password
-    );
+  const handleLogin = async () => {
+  const matched = await loginWithDemoAccount(
+    demoAccounts,
+    loginForm.email,
+    loginForm.password
+  );
 
-    if (!matched) {
-      setLoginError("Invalid demo account. Please use one of the accounts listed on the right.");
-      return;
-    }
+  if (!matched) {
+    setLoginError("Invalid demo account. Please use one of the accounts listed on the right.");
+    return;
+  }
 
-    setCurrentUser(matched);
-    setIsAuthenticated(true);
-    setLoginError("");
-  };
+  setCurrentUser(matched);
+  setIsAuthenticated(true);
+  setLoginError("");
+};
 
   const handleLogout = () => {
     setIsAuthenticated(false);
@@ -170,28 +175,27 @@ export default function App() {
     addLog("Cover uploaded", `Loaded local file: ${file.name}`);
   };
 
-  const onCreateSession = () => {
-    if (isScheduleRangeInvalid) {
+  const onCreateSession = async () => {
+  if (isScheduleRangeInvalid) {
       addLog("Invalid schedule", "End time must be later than Start time.");
       return;
     }
 
-    const now = new Date();
-    const start = parseScheduleValue(scheduleStart);
-    const hasFutureSchedule = start && start > now;
-    const nextState = hasFutureSchedule ? "scheduled" : "created";
-    setSessionState(nextState);
-    setSessionLifecycleState(nextState);
+    const result = await createMockSession(
+      scheduleStart,
+      scheduleEnd,
+      sessionLifecycleState
+    );
+
+    setSessionState(result.nextState);
+    setSessionLifecycleState(result.nextState);
     setVisibleProductId(null);
     setStreamUrl("");
-    addLog(
-      sessionLifecycleState === "ended" ? "New session created" : "Session created",
-      `Mock session created successfully.${scheduleStart ? ` Scheduled start: ${scheduleStart}.` : ""}${scheduleEnd ? ` Scheduled end: ${scheduleEnd}.` : ""}`
-    );
+    addLog(result.actionLabel, result.detail);
   };
 
-  const onGenerateUrl = () => {
-    const url = `rtmp://demo.shopee-live.local/session/${Math.random().toString(36).slice(2, 10)}`;
+  const onGenerateUrl = async () => {
+    const url = await generateMockStreamUrl();
     setStreamUrl(url);
     addLog("Stream URL generated", url);
   };
@@ -206,28 +210,32 @@ export default function App() {
     }
   };
 
-  const onStartStream = () => {
+    const onStartStream = async () => {
     if (isScheduleRangeInvalid) {
       addLog("Invalid schedule", "End time must be later than Start time.");
       return;
     }
 
-    const now = new Date();
-    const start = parseScheduleValue(scheduleStart);
-    if (start && start > now) {
-      addLog("Start blocked", `Stream is scheduled for ${scheduleStart}. Demo session stays in SCHEDULED state until that time.`);
+    const result = await startMockStream(scheduleStart);
+
+    if (result.blocked) {
+      addLog("Start blocked", result.detail);
       return;
     }
 
-    setSessionState("live");
-    setSessionLifecycleState("live");
-    addLog("Stream started", "Session moved to LIVE state.");
+    if (result.nextState) {
+      setSessionState(result.nextState);
+      setSessionLifecycleState(result.nextState);
+    }
+
+    addLog("Stream started", result.detail);
   };
 
-  const onEndStream = () => {
-    setSessionState("ended");
-    setSessionLifecycleState("ended");
-    addLog("Stream ended", "Session moved to ENDED state.");
+  const onEndStream = async () => {
+    const result = await endMockStream();
+    setSessionState(result.nextState);
+    setSessionLifecycleState(result.nextState);
+    addLog("Stream ended", result.detail);
   };
 
   // Product handlers
@@ -239,7 +247,7 @@ export default function App() {
     });
   };
 
-  const handleSelectAllProducts = () => {
+  const handleSelectAllProducts = async () => {
     if (allSelected) {
       setSelectedProducts([]);
       setAllSelected(false);
@@ -247,31 +255,34 @@ export default function App() {
       return;
     }
 
-    const allIds = products.map((p) => p.id);
+    const allIds = await selectAllProducts(products);
     setSelectedProducts(allIds);
     setAllSelected(true);
     addLog("All products selected", `${allIds.length} product(s) selected.`);
   };
 
-  const addProduct = () => {
-    if (hiddenProducts.length === 0) {
+  const addProduct = async () => {
+    const next = await addMockProduct(hiddenProducts);
+
+    if (!next) {
       addLog("Add product skipped", "No more hidden mock products to add.");
       return;
     }
 
-    const next = hiddenProducts[0];
     setProducts((prev) => {
       const updated = [...prev, next];
       setAllSelected(selectedProducts.length === updated.length && updated.length > 0);
       return updated;
     });
+
     setHiddenProducts((prev) => prev.slice(1));
     addLog("Product added", `${next.name} added to demo product list.`);
   };
 
-  const applySet = () => {
-    setAppliedProductIds(selectedProducts);
-    addLog("Product set applied", `${selectedProducts.length} product(s) added to current demo set.`);
+  const applySet = async () => {
+    const applied = await applyProductSet(selectedProducts);
+    setAppliedProductIds(applied);
+    addLog("Product set applied", `${applied.length} product(s) added to current demo set.`);
   };
 
   const showProduct = (id: number) => {
@@ -297,37 +308,22 @@ export default function App() {
   };
 
   // Comment handlers
-  const sendComment = () => {
+  const sendComment = async () => {
     if (!draftComment.trim()) return;
-    setComments((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        user: currentUser?.email?.split("@")[0] || "studio_operator",
-        text: draftComment.trim(),
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+
+    const comment = await createManualComment(
+      currentUser?.email?.split("@")[0] || "studio_operator",
+      draftComment.trim()
+    );
+
+    setComments((prev) => [...prev, comment]);
     addLog("Comment sent", draftComment.trim());
     setDraftComment("");
   };
 
-  const refreshComments = () => {
-    const mock = [
-      "Còn voucher không shop?",
-      "Cho xin mã giảm giá với ạ",
-      "Mẫu này có màu đen không?",
-    ];
-    const text = mock[Math.floor(Math.random() * mock.length)];
-    setComments((prev) => [
-      ...prev,
-      {
-        id: Date.now(),
-        user: `viewer_${Math.floor(Math.random() * 100)}`,
-        text,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-      },
-    ]);
+  const refreshComments = async () => {
+    const comment = await getMockIncomingComment();
+    setComments((prev) => [...prev, comment]);
     addLog("Comments refreshed", "Pulled 1 mock comment from demo source.");
   };
 
