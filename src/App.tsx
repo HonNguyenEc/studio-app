@@ -1,4 +1,3 @@
-// @ts-nocheck
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -28,7 +27,47 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 
-const seedProducts = [
+type SessionState = "draft" | "created" | "scheduled" | "live" | "ended";
+type ActiveTab = "overview" | "products" | "comments";
+
+type Product = {
+  id: number;
+  name: string;
+  price: number;
+  stock: number;
+};
+
+type DemoAccount = {
+  id: number;
+  role: string;
+  email: string;
+  password: string;
+  name: string;
+  shopName: string;
+};
+
+type CommentItem = {
+  id: number;
+  user: string;
+  text: string;
+  time: string;
+};
+
+type LogItem = {
+  id: number;
+  action: string;
+  detail: string;
+  time: string;
+};
+
+type ShopInfo = {
+  name: string;
+  id: string;
+  region: string;
+  mode: string;
+};
+
+const seedProducts: Product[] = [
   { id: 1, name: "T-Shirt", price: 19.99, stock: 50 },
   { id: 2, name: "Headphones", price: 59.99, stock: 20 },
   { id: 3, name: "Sunglasses", price: 29.99, stock: 100 },
@@ -48,7 +87,7 @@ const eCentricLogo = `data:image/svg+xml;utf8,
   </g>
 </svg>`;
 
-const demoAccounts = [
+const demoAccounts: DemoAccount[] = [
   {
     id: 1,
     role: "Admin",
@@ -67,12 +106,12 @@ const demoAccounts = [
   },
 ];
 
-const initialComments = [
+const initialComments: CommentItem[] = [
   { id: 1, user: "demo_user_01", text: "Shop ơi còn size M không?", time: "10:12" },
   { id: 2, user: "demo_user_02", text: "Cho xin link sản phẩm này với", time: "10:13" },
 ];
 
-function ProductThumb({ darkMode }) {
+function ProductThumb({ darkMode }: { darkMode: boolean }) {
   return (
     <div
       className={`h-14 w-14 rounded-xl shadow-inner ${
@@ -84,7 +123,7 @@ function ProductThumb({ darkMode }) {
   );
 }
 
-function AppShell({ darkMode, children }) {
+function AppShell({ darkMode, children }: { darkMode: boolean; children: React.ReactNode }) {
   return (
     <div
       className={darkMode
@@ -240,7 +279,7 @@ function Sidebar({ activeTab, setActiveTab, shopInfo, darkMode, setDarkMode, cur
   );
 }
 
-function StatusPill({ state }) {
+function StatusPill({ state }: { state: SessionState }) {
   const map = {
     draft: "bg-slate-600 text-white",
     created: "bg-green-600 text-white",
@@ -283,7 +322,11 @@ function OverviewTab({
 }) {
   const getDatePart = (value) => (value && value.includes("T") ? value.split("T")[0] : "");
   const getTimePart = (value) => (value && value.includes("T") ? value.split("T")[1]?.slice(0, 5) || "" : "");
-  const updateDateTime = (currentValue, part, nextValue) => {
+  const updateDateTime = (
+  currentValue: string,
+  part: "date" | "time",
+  nextValue: string
+) => {
     const currentDate = getDatePart(currentValue);
     const currentTime = getTimePart(currentValue);
     const date = part === "date" ? nextValue : currentDate;
@@ -817,37 +860,40 @@ function LoginScreen({ darkMode, setDarkMode, loginForm, setLoginForm, onLogin, 
 }
 
 export default function App() {
-  const [darkMode, setDarkMode] = useState(true);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loginForm, setLoginForm] = useState({ email: demoAccounts[0].email, password: demoAccounts[0].password });
-  const [loginError, setLoginError] = useState("");
-  const [currentUser, setCurrentUser] = useState(demoAccounts[0]);
-  const [activeTab, setActiveTab] = useState("overview");
-  const [sessionState, setSessionState] = useState("draft");
-  const [sessionLifecycleState, setSessionLifecycleState] = useState("draft");
-  const [coverPreview, setCoverPreview] = useState("");
-  const [streamUrl, setStreamUrl] = useState("");
-  const [products, setProducts] = useState(seedProducts.slice(0, 5));
-  const [hiddenProducts, setHiddenProducts] = useState(seedProducts.slice(5));
-  const [shopInfo] = useState({
-    name: "eCentric Demo Store",
-    id: "VN_SHOP_2401",
-    region: "Vietnam",
-    mode: "Demo / Mock API",
-  });
-  const [selectedProducts, setSelectedProducts] = useState([1, 2]);
-  const [allSelected, setAllSelected] = useState(false);
-  const [appliedProductIds, setAppliedProductIds] = useState([1, 2]);
-  const [visibleProductId, setVisibleProductId] = useState(null);
-  const [comments, setComments] = useState(initialComments);
-  const [draftComment, setDraftComment] = useState("");
-  const [logs, setLogs] = useState([]);
-  const [autoRefresh, setAutoRefresh] = useState(true);
-  const [scheduleStart, setScheduleStart] = useState("");
-  const [scheduleEnd, setScheduleEnd] = useState("");
+  const [darkMode, setDarkMode] = useState<boolean>(true);
+const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
+const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+const [loginForm, setLoginForm] = useState<{ email: string; password: string }>({
+  email: demoAccounts[0].email,
+  password: demoAccounts[0].password,
+});
+const [loginError, setLoginError] = useState<string>("");
+const [currentUser, setCurrentUser] = useState<DemoAccount>(demoAccounts[0]);
+const [activeTab, setActiveTab] = useState<ActiveTab>("overview");
+const [sessionState, setSessionState] = useState<SessionState>("draft");
+const [sessionLifecycleState, setSessionLifecycleState] = useState<SessionState>("draft");
+const [coverPreview, setCoverPreview] = useState<string>("");
+const [streamUrl, setStreamUrl] = useState<string>("");
+const [products, setProducts] = useState<Product[]>(seedProducts.slice(0, 5));
+const [hiddenProducts, setHiddenProducts] = useState<Product[]>(seedProducts.slice(5));
+const [shopInfo] = useState<ShopInfo>({
+  name: "eCentric Demo Store",
+  id: "VN_SHOP_2401",
+  region: "Vietnam",
+  mode: "Demo / Mock API",
+});
+const [selectedProducts, setSelectedProducts] = useState<number[]>([1, 2]);
+const [allSelected, setAllSelected] = useState<boolean>(false);
+const [appliedProductIds, setAppliedProductIds] = useState<number[]>([1, 2]);
+const [visibleProductId, setVisibleProductId] = useState<number | null>(null);
+const [comments, setComments] = useState<CommentItem[]>(initialComments);
+const [draftComment, setDraftComment] = useState<string>("");
+const [logs, setLogs] = useState<LogItem[]>([]);
+const [autoRefresh, setAutoRefresh] = useState<boolean>(true);
+const [scheduleStart, setScheduleStart] = useState<string>("");
+const [scheduleEnd, setScheduleEnd] = useState<string>("");
 
-  const parseScheduleValue = (value) => {
+  const parseScheduleValue = (value: string): Date | null => {
     if (!value) return null;
     const dt = new Date(value);
     return Number.isNaN(dt.getTime()) ? null : dt;
@@ -929,7 +975,7 @@ export default function App() {
     setActiveTab("overview");
   };
 
-  const addLog = (action, detail) => {
+  const addLog = (action: string, detail: string) => {
     setLogs((prev) => [
       ...prev,
       {
@@ -941,7 +987,7 @@ export default function App() {
     ]);
   };
 
-  const onCoverChange = (e) => {
+  const onCoverChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     const url = URL.createObjectURL(file);
@@ -1009,7 +1055,7 @@ export default function App() {
     addLog("Stream ended", "Session moved to ENDED state.");
   };
 
-  const toggleProduct = (id) => {
+  const toggleProduct = (id: number) => {
     setSelectedProducts((prev) => {
       const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
       setAllSelected(next.length === products.length && products.length > 0);
@@ -1052,13 +1098,13 @@ export default function App() {
     addLog("Product set applied", `${selectedProducts.length} product(s) added to current demo set.`);
   };
 
-  const showProduct = (id) => {
+  const showProduct = (id: number) => {
     setVisibleProductId(id);
     const product = products.find((p) => p.id === id);
     addLog("Product shown", `${product?.name || `#${id}`} is now visible in livestream.`);
   };
 
-  const removeProduct = (id) => {
+  const removeProduct = (id?: number) => {
     const targetId = id || visibleProductId || selectedProducts[0];
     if (!targetId) return;
 
