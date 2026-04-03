@@ -39,6 +39,8 @@ import { seedProducts, eCentricLogo, demoAccounts, initialComments } from "./moc
 import Card from "./components/Card";
 import StatusPill from "./components/StatusPill";
 import ProductThumb from "./components/ProductThumb";
+import Sidebar from "./components/Sidebar";
+import LoginScreen from "./components/LoginScreen";
 
 type SessionState = "draft" | "created" | "scheduled" | "live" | "ended";
 type ActiveTab = "overview" | "products" | "comments";
@@ -89,150 +91,6 @@ function AppShell({ darkMode, children }: { darkMode: boolean; children: React.R
     >
       {children}
     </div>
-  );
-}
-
-function Sidebar({ activeTab, setActiveTab, shopInfo, darkMode, setDarkMode, currentUser, onLogout, isSidebarCollapsed, setIsSidebarCollapsed }) {
-  const items = [
-    { key: "overview", label: "Overview", icon: LayoutDashboard },
-    { key: "products", label: "Products", icon: Package },
-    { key: "comments", label: "Comments", icon: MessageSquare },
-  ];
-
-  return (
-    <aside
-      className={`relative self-start w-full rounded-3xl border p-3 shadow-2xl backdrop-blur transition-all duration-300 ${
-        isSidebarCollapsed ? "md:w-24" : "md:w-72"
-      } ${darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white/80"}`}
-    >
-      <div className={`mb-6 px-2 pt-2 ${isSidebarCollapsed ? "flex flex-col items-center gap-3" : "flex items-center justify-between"}`}>
-        <div className={`flex items-center ${isSidebarCollapsed ? "justify-center" : "gap-3"}`}>
-          <img src={eCentricLogo} alt="eCentric logo" className="h-12 w-12 rounded-2xl bg-white object-contain p-1 shadow-sm" />
-          {!isSidebarCollapsed ? (
-            <div>
-              <div className={`text-2xl font-bold tracking-tight ${darkMode ? "text-white" : "text-[#2C3DA6]"}`}>
-                eCentric Studio
-              </div>
-              <div className={`text-xs ${darkMode ? "text-white/50" : "text-slate-500"}`}>Demo Mode · Mock API</div>
-            </div>
-          ) : null}
-        </div>
-
-        {!isSidebarCollapsed ? (
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => setDarkMode((prev) => !prev)}
-              className={`rounded-2xl border p-2 ${
-                darkMode ? "border-white/10 bg-white/5 text-white/80" : "border-slate-200 bg-slate-50 text-[#2C3DA6]"
-              }`}
-            >
-              {darkMode ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
-            </button>
-            <button
-              onClick={() => setIsSidebarCollapsed(true)}
-              className={`rounded-2xl border p-2 ${
-                darkMode ? "border-white/10 bg-white/5 text-white/80" : "border-slate-200 bg-slate-50 text-[#2C3DA6]"
-              }`}
-              title="Collapse sidebar"
-            >
-              <PanelLeftClose className="h-5 w-5" />
-            </button>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center gap-2">
-            <button
-              onClick={() => setDarkMode((prev) => !prev)}
-              className={`rounded-2xl border p-2 ${
-                darkMode ? "border-white/10 bg-white/5 text-white/80" : "border-slate-200 bg-slate-50 text-[#2C3DA6]"
-              }`}
-              title="Toggle theme"
-            >
-              {darkMode ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
-            </button>
-            <button
-              onClick={() => setIsSidebarCollapsed(false)}
-              className={`rounded-2xl border p-2 ${
-                darkMode ? "border-white/10 bg-white/5 text-white/80" : "border-slate-200 bg-slate-50 text-[#2C3DA6]"
-              }`}
-              title="Expand sidebar"
-            >
-              <PanelLeftOpen className="h-5 w-5" />
-            </button>
-          </div>
-        )}
-      </div>
-
-      {!isSidebarCollapsed ? (
-        <>
-          <div className={`mb-4 rounded-3xl border p-4 ${darkMode ? "border-[#2C3DA6]/30 bg-gradient-to-br from-[#2C3DA6]/20 to-[#EF7CAF]/10" : "border-[#2C3DA6]/15 bg-gradient-to-br from-[#2C3DA6]/8 to-[#EF7CAF]/10"}`}>
-            <div className="mb-3 flex items-start justify-between gap-3">
-              <div className={`flex items-center gap-2 pt-1 text-sm font-semibold ${darkMode ? "text-indigo-200" : "text-[#2C3DA6]"}`}>
-                <BadgeCheck className="h-4 w-4" /> Demo Environment
-              </div>
-              <span className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-2 text-center text-xs font-semibold leading-tight ${darkMode ? "border border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border border-emerald-500/15 bg-emerald-500/10 text-emerald-700"}`}>
-                Ready for Review
-              </span>
-            </div>
-
-            <div className={`rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white/80"}`}>
-              <div className={`mb-2 flex items-center gap-2 text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>
-                <Store className={`h-4 w-4 ${darkMode ? "text-[#EF7CAF]" : "text-[#2C3DA6]"}`} /> {shopInfo.name}
-              </div>
-              <div className={`space-y-1 text-xs ${darkMode ? "text-white/55" : "text-slate-500"}`}>
-                <div>Shop ID: <span className={darkMode ? "text-white/80" : "text-slate-700"}>{shopInfo.id}</span></div>
-                <div>Region: <span className={darkMode ? "text-white/80" : "text-slate-700"}>{shopInfo.region}</span></div>
-                <div>Mode: <span className={darkMode ? "text-white/80" : "text-slate-700"}>{shopInfo.mode}</span></div>
-              </div>
-            </div>
-          </div>
-
-          <div className={`mb-4 rounded-3xl border p-4 ${darkMode ? "border-white/10 bg-slate-900/35" : "border-slate-200 bg-slate-50"}`}>
-            <div className={`mb-2 flex items-center gap-2 text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>
-              <User className="h-4 w-4 text-[#EF7CAF]" /> Logged in Account
-            </div>
-            <div className={`text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{currentUser?.name}</div>
-            <div className={`mt-1 text-xs ${darkMode ? "text-white/55" : "text-slate-500"}`}>{currentUser?.email}</div>
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${darkMode ? "bg-[#EF7CAF]/15 text-pink-200" : "bg-[#EF7CAF]/12 text-[#b43c7d]"}`}>
-                {currentUser?.role}
-              </span>
-              <button
-                onClick={onLogout}
-                className={`inline-flex items-center gap-2 rounded-xl px-3 py-2 text-xs font-semibold transition ${darkMode ? "bg-white/5 text-white hover:bg-white/10" : "bg-white text-slate-700 hover:bg-slate-100 border border-slate-200"}`}
-              >
-                <LogOut className="h-4 w-4" /> Logout
-              </button>
-            </div>
-          </div>
-        </>
-      ) : null}
-
-      <div className="space-y-2">
-        {items.map((item) => {
-          const Icon = item.icon;
-          const active = activeTab === item.key;
-          return (
-            <button
-              key={item.key}
-              onClick={() => setActiveTab(item.key)}
-              className={`flex w-full items-center rounded-2xl transition ${
-                isSidebarCollapsed ? "justify-center px-0 py-4" : "gap-3 px-4 py-4 text-left"
-              } ${
-                active
-                  ? "bg-[#2C3DA6] text-white shadow-lg"
-                  : darkMode
-                    ? "bg-slate-700/70 text-white/90 hover:bg-slate-600/80"
-                    : "bg-slate-100 text-slate-700 hover:bg-slate-200"
-              }`}
-              title={item.label}
-            >
-              <Icon className="h-5 w-5" />
-              {!isSidebarCollapsed ? <span className="text-lg font-medium">{item.label}</span> : null}
-            </button>
-          );
-        })}
-      </div>
-    </aside>
   );
 }
 
@@ -711,92 +569,6 @@ function CommentsTab({ darkMode, comments, draftComment, setDraftComment, sendCo
   );
 }
 
-function LoginScreen({ darkMode, setDarkMode, loginForm, setLoginForm, onLogin, loginError }) {
-  return (
-    <AppShell darkMode={darkMode}>
-      <div className="flex min-h-screen items-center justify-center p-6">
-        <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className={`rounded-[28px] border p-8 shadow-2xl ${darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white/85"}`}>
-            <div className="mb-8 flex items-center gap-4">
-              <img src={eCentricLogo} alt="eCentric logo" className="h-16 w-16 rounded-3xl bg-white p-1.5 shadow-sm" />
-              <div>
-                <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-[#2C3DA6]"}`}>eCentric Studio</div>
-                <div className={`${darkMode ? "text-white/55" : "text-slate-500"}`}>Shopee Livestream Demo Portal</div>
-              </div>
-              <button
-                onClick={() => setDarkMode((prev) => !prev)}
-                className={`ml-auto rounded-2xl border p-2 ${darkMode ? "border-white/10 bg-white/5 text-white/80" : "border-slate-200 bg-slate-50 text-[#2C3DA6]"}`}
-              >
-                {darkMode ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
-              </button>
-            </div>
-
-            <div className={`mb-6 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] ${darkMode ? "border border-[#EF7CAF]/20 bg-[#EF7CAF]/10 text-pink-200" : "border border-[#EF7CAF]/20 bg-[#EF7CAF]/10 text-[#b43c7d]"}`}>
-              <LogIn className="h-3.5 w-3.5" /> Demo Login
-            </div>
-
-            <h1 className={`text-4xl font-bold leading-tight ${darkMode ? "text-white" : "text-slate-900"}`}>Login to manage the livestream demo environment</h1>
-            <p className={`mt-3 text-base ${darkMode ? "text-white/60" : "text-slate-500"}`}>Use one of the demo accounts below to enter the system and show account-based management flow.</p>
-
-            <div className="mt-8 grid gap-4">
-              <div>
-                <label className={`mb-2 block text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>Email</label>
-                <input
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm((prev) => ({ ...prev, email: e.target.value }))}
-                  placeholder="admin@ecentric.demo"
-                  className={`w-full rounded-2xl border px-4 py-3 text-sm outline-none ${darkMode ? "border-white/10 bg-slate-900/40 text-white placeholder:text-white/35" : "border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400"}`}
-                />
-              </div>
-              <div>
-                <label className={`mb-2 block text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>Password</label>
-                <input
-                  type="password"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm((prev) => ({ ...prev, password: e.target.value }))}
-                  placeholder="123456"
-                  className={`w-full rounded-2xl border px-4 py-3 text-sm outline-none ${darkMode ? "border-white/10 bg-slate-900/40 text-white placeholder:text-white/35" : "border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400"}`}
-                />
-              </div>
-
-              {loginError ? (
-                <div className={`rounded-2xl border px-4 py-3 text-sm ${darkMode ? "border-red-400/15 bg-red-400/10 text-red-200" : "border-red-200 bg-red-50 text-red-600"}`}>
-                  {loginError}
-                </div>
-              ) : null}
-
-              <button onClick={onLogin} className="rounded-2xl bg-[#2C3DA6] px-5 py-4 text-base font-semibold text-white shadow-lg hover:opacity-95">
-                Login to Demo Portal
-              </button>
-            </div>
-          </div>
-
-          <div className={`rounded-[28px] border p-8 shadow-2xl ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white/85"}`}>
-            <div className={`mb-4 flex items-center gap-2 text-xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>
-              <ShieldCheck className="h-5 w-5 text-emerald-400" /> Demo Accounts
-            </div>
-            <div className="space-y-4">
-              {demoAccounts.map((acc) => (
-                <div key={acc.id} className={`rounded-3xl border p-5 ${darkMode ? "border-white/10 bg-slate-900/45" : "border-slate-200 bg-slate-50"}`}>
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <div className={`text-lg font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{acc.name}</div>
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${darkMode ? "bg-[#EF7CAF]/15 text-pink-200" : "bg-[#EF7CAF]/12 text-[#b43c7d]"}`}>{acc.role}</span>
-                  </div>
-                  <div className={`space-y-1 text-sm ${darkMode ? "text-white/60" : "text-slate-500"}`}>
-                    <div>Email: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{acc.email}</span></div>
-                    <div>Password: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{acc.password}</span></div>
-                    <div>Shop: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{acc.shopName}</span></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
-    </AppShell>
-  );
-}
-
 export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(true);
 const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -1098,17 +870,19 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
   );
 
   if (!isAuthenticated) {
-    return (
-      <LoginScreen
-        darkMode={darkMode}
-        setDarkMode={setDarkMode}
-        loginForm={loginForm}
-        setLoginForm={setLoginForm}
-        onLogin={handleLogin}
-        loginError={loginError}
-      />
-    );
-  }
+  return (
+    <LoginScreen
+      darkMode={darkMode}
+      setDarkMode={setDarkMode}
+      loginForm={loginForm}
+      setLoginForm={setLoginForm}
+      onLogin={handleLogin}
+      loginError={loginError}
+      demoAccounts={demoAccounts}
+      logoSrc={eCentricLogo}
+    />
+  );
+}
 
   return (
     <AppShell darkMode={darkMode}>
@@ -1120,8 +894,18 @@ const [scheduleEnd, setScheduleEnd] = useState<string>("");
               : "md:grid-cols-[280px_minmax(0,1fr)]"
           }`}
         >
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} shopInfo={shopInfo} darkMode={darkMode} setDarkMode={setDarkMode} currentUser={currentUser} onLogout={handleLogout} isSidebarCollapsed={isSidebarCollapsed} setIsSidebarCollapsed={setIsSidebarCollapsed} />
-
+          <Sidebar
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            shopInfo={shopInfo}
+            darkMode={darkMode}
+            setDarkMode={setDarkMode}
+            currentUser={currentUser}
+            onLogout={handleLogout}
+            isSidebarCollapsed={isSidebarCollapsed}
+            setIsSidebarCollapsed={setIsSidebarCollapsed}
+            logoSrc={eCentricLogo}
+          />
           <motion.main
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
