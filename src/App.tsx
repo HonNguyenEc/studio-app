@@ -1,31 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
-import {
-  LayoutDashboard,
-  Package,
-  MessageSquare,
-  Upload,
-  Play,
-  Plus,
-  Trash2,
-  Eye,
-  CheckCircle2,
-  AlertCircle,
-  RefreshCw,
-  MoonStar,
-  Sun,
-  Store,
-  BadgeCheck,
-  Copy,
-  Radio,
-  Clock3,
-  LogIn,
-  User,
-  ShieldCheck,
-  LogOut,
-  PanelLeftClose,
-  PanelLeftOpen,
-} from "lucide-react";
 import type {
   SessionState,
   ActiveTab,
@@ -36,9 +10,6 @@ import type {
   ShopInfo,
 } from "./types";
 import { seedProducts, eCentricLogo, demoAccounts, initialComments } from "./mockData";
-import Card from "./components/Card";
-import StatusPill from "./components/StatusPill";
-import ProductThumb from "./components/ProductThumb";
 import Sidebar from "./components/Sidebar";
 import LoginScreen from "./components/LoginScreen";
 import OverviewTab from "./components/OverviewTab";
