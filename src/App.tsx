@@ -43,6 +43,7 @@ import Sidebar from "./components/Sidebar";
 import LoginScreen from "./components/LoginScreen";
 import OverviewTab from "./components/OverviewTab";
 import ProductsTab from "./components/ProductsTab";
+import CommentsTab from "./components/CommentsTab";
 
 function AppShell({ darkMode, children }: { darkMode: boolean; children: React.ReactNode }) {
   return (
@@ -53,58 +54,6 @@ function AppShell({ darkMode, children }: { darkMode: boolean; children: React.R
     >
       {children}
     </div>
-  );
-}
-
-function CommentsTab({ darkMode, comments, draftComment, setDraftComment, sendComment, refreshComments, autoRefresh, setAutoRefresh, currentUser }) {
-  return (
-    <Card darkMode={darkMode}>
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>Comments</div>
-          <div className={`mt-1 text-sm ${darkMode ? "text-white/50" : "text-slate-500"}`}>Real-time comments can be connected after official API approval.</div>
-          <div className={`mt-2 text-xs ${darkMode ? "text-white/45" : "text-slate-500"}`}>Posting as: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{currentUser?.name}</span></div>
-        </div>
-
-        <label className={`inline-flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm font-medium ${darkMode ? "border-white/10 bg-slate-900/40 text-white" : "border-slate-200 bg-slate-50 text-slate-700"}`}>
-          <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} className="h-4 w-4 rounded" />
-          Auto refresh every 5s
-        </label>
-      </div>
-
-      <div className={`rounded-3xl border p-6 ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white"}`}>
-        <label className={`mb-3 block text-2xl font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>Post Comment</label>
-        <textarea
-          value={draftComment}
-          onChange={(e) => setDraftComment(e.target.value)}
-          placeholder="Type a comment..."
-          className={`min-h-[140px] w-full rounded-2xl border p-4 text-lg outline-none ${darkMode ? "border-white/10 bg-slate-900/40 text-white placeholder:text-white/40" : "border-slate-200 bg-slate-50 text-slate-800 placeholder:text-slate-400"}`}
-        />
-
-        <div className="mt-6 flex flex-wrap gap-3">
-          <button onClick={sendComment} className="rounded-2xl bg-[#2C3DA6] px-6 py-4 text-lg font-semibold text-white shadow-lg">Send Comment</button>
-          <button onClick={refreshComments} className="rounded-2xl bg-[#EF7CAF] px-6 py-4 text-lg font-semibold text-white shadow-lg">
-            <span className="inline-flex items-center gap-2"><RefreshCw className="h-5 w-5" /> Refresh Comments</span>
-          </button>
-        </div>
-
-        <div className="mt-8 space-y-3">
-          {comments.length === 0 ? (
-            <div className={`text-lg ${darkMode ? "text-white/50" : "text-slate-500"}`}>No comments yet.</div>
-          ) : (
-            comments.slice().reverse().map((c) => (
-              <div key={c.id} className={`rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-slate-900/50" : "border-slate-200 bg-slate-50"}`}>
-                <div className="flex items-center justify-between gap-4">
-                  <div className={`text-sm ${darkMode ? "text-white/60" : "text-slate-500"}`}>@{c.user}</div>
-                  <div className={`text-xs ${darkMode ? "text-white/40" : "text-slate-400"}`}>{c.time}</div>
-                </div>
-                <div className={`mt-2 text-lg ${darkMode ? "text-white" : "text-slate-900"}`}>{c.text}</div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </Card>
   );
 }
 
