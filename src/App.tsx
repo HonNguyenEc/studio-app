@@ -26,6 +26,15 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
+import type {
+  SessionState,
+  ActiveTab,
+  Product,
+  DemoAccount,
+  CommentItem,
+  LogItem,
+  ShopInfo,
+} from "./types";
 
 type SessionState = "draft" | "created" | "scheduled" | "live" | "ended";
 type ActiveTab = "overview" | "products" | "comments";
