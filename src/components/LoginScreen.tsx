@@ -1,20 +1,12 @@
 import { LogIn, MoonStar, ShieldCheck, Sun } from "lucide-react";
-
-type DemoAccount = {
-  id: number;
-  role: string;
-  email: string;
-  password: string;
-  name: string;
-  shopName: string;
-};
+import type { DemoAccount, LoginForm } from "../types";
 
 type LoginScreenProps = {
   isLoggingIn: boolean;
   darkMode: boolean;
   setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
-  loginForm: { email: string; password: string };
-  setLoginForm: React.Dispatch<React.SetStateAction<{ email: string; password: string }>>;
+  loginForm: LoginForm;
+  setLoginForm: React.Dispatch<React.SetStateAction<LoginForm>>;
   onLogin: () => void;
   loginError: string;
   demoAccounts: DemoAccount[];

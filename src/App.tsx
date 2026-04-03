@@ -24,6 +24,8 @@ import type {
   CommentItem,
   LogItem,
   ShopInfo,
+  ToastState,
+  LoginForm
 } from "./types";
 import { seedProducts, eCentricLogo, demoAccounts, initialComments } from "./mockData";
 import Sidebar from "./components/Sidebar";
@@ -42,10 +44,7 @@ export default function App() {
   
   // Loading and error state
   const [appError, setAppError] = useState<string>("");
-  const [toast, setToast] = useState<{
-  message: string;
-  type: "success" | "error" | "info";
-} | null>(null);
+  const [toast, setToast] = useState<ToastState | null>(null);
 
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [isCreatingSession, setIsCreatingSession] = useState<boolean>(false);
@@ -61,7 +60,7 @@ export default function App() {
 
   // Auth state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [loginForm, setLoginForm] = useState<{ email: string; password: string }>({
+  const [loginForm, setLoginForm] = useState<LoginForm>({
     email: demoAccounts[0].email,
     password: demoAccounts[0].password,
   });
@@ -214,7 +213,7 @@ export default function App() {
   
   const showToast = (
     message: string,
-    type: "success" | "error" | "info" = "success"
+    type: ToastState["type"] = "success"
   ) => {
     setToast({ message, type });
   };

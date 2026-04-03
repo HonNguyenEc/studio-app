@@ -1,3 +1,4 @@
+import type { ActiveTab, ShopInfo, DemoAccount } from "../types";
 import {
   LayoutDashboard,
   Package,
@@ -12,28 +13,13 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 
-type ActiveTab = "overview" | "products" | "comments";
-
-type ShopInfo = {
-  name: string;
-  id: string;
-  region: string;
-  mode: string;
-};
-
-type CurrentUser = {
-  name: string;
-  email: string;
-  role: string;
-};
-
 type SidebarProps = {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
   shopInfo: ShopInfo;
   darkMode: boolean;
   setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
-  currentUser: CurrentUser;
+  currentUser: DemoAccount;
   onLogout: () => void;
   isSidebarCollapsed: boolean;
   setIsSidebarCollapsed: React.Dispatch<React.SetStateAction<boolean>>;

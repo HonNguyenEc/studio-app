@@ -37,3 +37,13 @@ export type ShopInfo = {
   region: string;
   mode: string;
 };
+
+export type LoginForm = {
+  email: string;
+  password: string;
+};
+
+export type ToastState = {
+  message: string;
+  type: "success" | "error" | "info";
+};
