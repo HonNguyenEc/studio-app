@@ -1,7 +1,7 @@
 import React from "react";
 import { RefreshCw } from "lucide-react";
 import Card from "./Card";
-import type { CommentItem, DemoAccount } from "../types";
+import type { CommentItem, DemoAccount, ManagementPlatform } from "../common/type/app.type";
 
 type CommentsTabProps = {
   isRefreshingComments: boolean;
@@ -15,6 +15,7 @@ type CommentsTabProps = {
   autoRefresh: boolean;
   setAutoRefresh: React.Dispatch<React.SetStateAction<boolean>>;
   currentUser: DemoAccount;
+  managementPlatform: ManagementPlatform;
 };
 
 export default function CommentsTab({
@@ -29,7 +30,10 @@ export default function CommentsTab({
   autoRefresh,
   setAutoRefresh,
   currentUser,
+  managementPlatform,
 }: CommentsTabProps) {
+  const refreshHint = managementPlatform === "Shopee" ? "5s" : "3.5s";
+
   return (
     <Card darkMode={darkMode}>
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
@@ -38,13 +42,10 @@ export default function CommentsTab({
             Comments
           </div>
           <div className={`mt-1 text-sm ${darkMode ? "text-white/50" : "text-slate-500"}`}>
-            Real-time comments can be connected after official API approval.
+            {managementPlatform} comment feed simulation with platform-specific cadence and sentiment tags.
           </div>
           <div className={`mt-2 text-xs ${darkMode ? "text-white/45" : "text-slate-500"}`}>
-            Posting as:{" "}
-            <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>
-              {currentUser?.name}
-            </span>
+            Posting as <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{currentUser?.name}</span>
           </div>
         </div>
 
@@ -61,20 +62,12 @@ export default function CommentsTab({
             onChange={(e) => setAutoRefresh(e.target.checked)}
             className="h-4 w-4 rounded"
           />
-          Auto refresh every 5s
+          Auto refresh every {refreshHint}
         </label>
       </div>
 
-      <div
-        className={`rounded-3xl border p-6 ${
-          darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white"
-        }`}
-      >
-        <label
-          className={`mb-3 block text-2xl font-semibold ${
-            darkMode ? "text-white" : "text-slate-900"
-          }`}
-        >
+      <div className={`rounded-3xl border p-6 ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white"}`}>
+        <label className={`mb-3 block text-2xl font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>
           Post Comment
         </label>
 
@@ -94,9 +87,9 @@ export default function CommentsTab({
             onClick={sendComment}
             disabled={isSendingComment}
             className={`rounded-2xl px-6 py-4 text-lg font-semibold text-white shadow-lg ${
-                isSendingComment ? "cursor-not-allowed bg-[#2C3DA6]/60" : "bg-[#2C3DA6]"
+              isSendingComment ? "cursor-not-allowed bg-[#2C3DA6]/60" : "bg-[#2C3DA6]"
             }`}
-            >
+          >
             {isSendingComment ? "Sending..." : "Send Comment"}
           </button>
 
@@ -104,20 +97,18 @@ export default function CommentsTab({
             onClick={refreshComments}
             disabled={isRefreshingComments}
             className={`rounded-2xl px-6 py-4 text-lg font-semibold text-white shadow-lg ${
-                isRefreshingComments ? "cursor-not-allowed bg-[#EF7CAF]/60" : "bg-[#EF7CAF]"
+              isRefreshingComments ? "cursor-not-allowed bg-[#EF7CAF]/60" : "bg-[#EF7CAF]"
             }`}
-            >
+          >
             <span className="inline-flex items-center gap-2">
-                <RefreshCw className="h-5 w-5" /> {isRefreshingComments ? "Refreshing..." : "Refresh Comments"}
+              <RefreshCw className="h-5 w-5" /> {isRefreshingComments ? "Refreshing..." : "Refresh Comments"}
             </span>
           </button>
         </div>
 
         <div className="mt-8 space-y-3">
           {comments.length === 0 ? (
-            <div className={`text-lg ${darkMode ? "text-white/50" : "text-slate-500"}`}>
-              No comments yet.
-            </div>
+            <div className={`text-lg ${darkMode ? "text-white/50" : "text-slate-500"}`}>No comments yet.</div>
           ) : (
             comments
               .slice()
@@ -130,15 +121,33 @@ export default function CommentsTab({
                   }`}
                 >
                   <div className="flex items-center justify-between gap-4">
-                    <div className={`text-sm ${darkMode ? "text-white/60" : "text-slate-500"}`}>
-                      @{c.user}
-                    </div>
-                    <div className={`text-xs ${darkMode ? "text-white/40" : "text-slate-400"}`}>
-                      {c.time}
-                    </div>
+                    <div className={`text-sm ${darkMode ? "text-white/60" : "text-slate-500"}`}>@{c.user}</div>
+                    <div className={`text-xs ${darkMode ? "text-white/40" : "text-slate-400"}`}>{c.time}</div>
                   </div>
-                  <div className={`mt-2 text-lg ${darkMode ? "text-white" : "text-slate-900"}`}>
-                    {c.text}
+                  <div className={`mt-2 text-lg ${darkMode ? "text-white" : "text-slate-900"}`}>{c.text}</div>
+                  <div className="mt-2 flex items-center gap-2">
+                    {c.platform ? (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          c.platform === "Shopee" ? "bg-orange-500/15 text-orange-300" : "bg-sky-500/15 text-sky-300"
+                        }`}
+                      >
+                        {c.platform}
+                      </span>
+                    ) : null}
+                    {c.sentiment ? (
+                      <span
+                        className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${
+                          c.sentiment === "question"
+                            ? "bg-amber-500/15 text-amber-300"
+                            : c.sentiment === "positive"
+                              ? "bg-emerald-500/15 text-emerald-300"
+                              : "bg-slate-500/20 text-slate-300"
+                        }`}
+                      >
+                        {c.sentiment}
+                      </span>
+                    ) : null}
                   </div>
                 </div>
               ))

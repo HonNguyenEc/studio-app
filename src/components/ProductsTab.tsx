@@ -1,7 +1,7 @@
 import { Plus, Trash2 } from "lucide-react";
 import Card from "./Card";
 import ProductThumb from "./ProductThumb";
-import type { Product } from "../types";
+import type { Product } from "../common/type/app.type";
 
 type ProductsTabProps = {
   isAddingProduct: boolean;

@@ -1,8 +1,9 @@
-import type { ActiveTab, ShopInfo, DemoAccount } from "../types";
+import type { ActiveTab, ShopInfo, DemoAccount, ManagementPlatform } from "../common/type/app.type";
 import {
   LayoutDashboard,
   Package,
   MessageSquare,
+  FileText,
   MoonStar,
   Sun,
   Store,
@@ -17,6 +18,9 @@ type SidebarProps = {
   activeTab: ActiveTab;
   setActiveTab: (tab: ActiveTab) => void;
   shopInfo: ShopInfo;
+  managementPlatform: ManagementPlatform;
+  managementPlatformOptions: ManagementPlatform[];
+  setManagementPlatform: React.Dispatch<React.SetStateAction<ManagementPlatform>>;
   darkMode: boolean;
   setDarkMode: React.Dispatch<React.SetStateAction<boolean>>;
   currentUser: DemoAccount;
@@ -30,6 +34,9 @@ export default function Sidebar({
   activeTab,
   setActiveTab,
   shopInfo,
+  managementPlatform,
+  managementPlatformOptions,
+  setManagementPlatform,
   darkMode,
   setDarkMode,
   currentUser,
@@ -42,6 +49,7 @@ export default function Sidebar({
     { key: "overview", label: "Overview", icon: LayoutDashboard },
     { key: "products", label: "Products", icon: Package },
     { key: "comments", label: "Comments", icon: MessageSquare },
+    { key: "report", label: "Report", icon: FileText },
   ];
 
   return (
@@ -120,6 +128,23 @@ export default function Sidebar({
             </div>
 
             <div className={`rounded-2xl border p-3 ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white/80"}`}>
+              <div className="mb-3">
+                <label className={`mb-1 block text-[11px] uppercase tracking-[0.2em] ${darkMode ? "text-white/45" : "text-slate-500"}`}>
+                  Management Platform
+                </label>
+                <select
+                  value={managementPlatform}
+                  onChange={(e) => setManagementPlatform(e.target.value as ManagementPlatform)}
+                  className={`w-full rounded-xl border px-3 py-2 text-sm font-medium outline-none ${darkMode ? "border-white/15 bg-slate-900/50 text-white" : "border-slate-200 bg-slate-50 text-slate-700"}`}
+                >
+                  {managementPlatformOptions.map((platformOption) => (
+                    <option key={platformOption} value={platformOption}>
+                      {platformOption}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className={`mb-2 flex items-center gap-2 text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>
                 <Store className={`h-4 w-4 ${darkMode ? "text-[#EF7CAF]" : "text-[#2C3DA6]"}`} /> {shopInfo.name}
               </div>

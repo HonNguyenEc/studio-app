@@ -1,4 +1,4 @@
-import type { SessionState } from "../types";
+import type { SessionState } from "../common/type/app.type";
 
 type StatusPillProps = {
   state: SessionState;

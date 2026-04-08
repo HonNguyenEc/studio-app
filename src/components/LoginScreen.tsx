@@ -1,5 +1,5 @@
 import { LogIn, MoonStar, ShieldCheck, Sun } from "lucide-react";
-import type { DemoAccount, LoginForm } from "../types";
+import type { DemoAccount, LoginForm } from "../common/type/app.type";
 
 type LoginScreenProps = {
   isLoggingIn: boolean;

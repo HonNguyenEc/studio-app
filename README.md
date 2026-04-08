@@ -1,73 +1,82 @@
-# React + TypeScript + Vite
+# eCentric Studio
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Livestream demo studio built with React + TypeScript + Vite.
 
-Currently, two official plugins are available:
+## Architecture Rules (Required)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+This project uses strict **pages ↔ modules mirror** architecture.
 
-## React Compiler
+- `pages/*` contains only `index.tsx`
+- `modules/*` contains page implementations (`component/hook/util/interface`)
+- `common/route/*` contains all route groups + `index.route.tsx`
+- Shared logic only in `common/*`
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Full rulebook: **`docs/architecture-rules.md`**
 
-## Expanding the ESLint configuration
+## Scripts
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- `yarn dev`
+- `yarn lint`
+- `yarn build`
+- `yarn preview`
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Environment
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+Current default flow runs in **Demo Mode** and does not require real marketplace credentials.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+You can still keep `.env` for local configuration, but this demo should not use real partner/shop/customer data.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### OBS Local (WebSocket)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+To control OBS locally from this app:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- Enable OBS WebSocket in OBS (Tools → WebSocket Server Settings)
+- Set `.env` values:
+  - `VITE_OBS_WS_URL=ws://127.0.0.1:4455`
+  - `VITE_OBS_WS_PASSWORD=<your_password>`
+
+The app now supports platform-scoped OBS control (Shopee/Tiktok), with isolated session persistence keys:
+
+- `live_session_shopee`
+- `live_session_tiktok`
+
+and isolated OBS config keys:
+
+- `obs_config_shopee`
+- `obs_config_tiktok`
+
+## Platform Isolation & Ops Safeguards
+
+- Session lifecycle state is separated by platform (Shopee does not mutate Tiktok state, and vice versa).
+- OBS command execution is queued per platform to avoid race conditions.
+- Start/End actions include cooldown guard and structured logs (`platform`, `result`, `errorCode`, `requestId`).
+- End Stream action requires explicit confirmation.
+
+## Local Verification Checklist
+
+1. Open app and login.
+2. Select **Shopee**, connect OBS, create/start/end session.
+3. Switch to **Tiktok**, verify session and OBS form values are independent.
+4. Confirm **Shopee actions do not change Tiktok session state**.
+5. Reload page and verify each platform restores its own saved session/config.
+6. Negative checks:
+   - wrong OBS password
+   - OBS closed
+   - invalid OBS endpoint
+   Ensure error log includes platform + error code.
+
+## API Review Readiness (Recommended Pack)
+
+Before requesting real platform API permissions, prepare:
+
+- Privacy Policy / Terms / Data Deletion URL
+- Feature-to-scope mapping document (least privilege)
+- Security note (token storage/rotation/revoke, audit logs)
+- Demo script/video for reviewer (authorize → use feature → revoke)
+
+## Demo Scope & Safety
+
+- This project is a UI/UX + workflow prototype with **mock behavior only**.
+- Shopee and TikTok are now separated in demo logic (profile, stream URL pattern, comment cadence, metrics behavior).
+- No production API call is required in the default demo flow.
+- Do not place real credentials or personal/customer information in this repository.
