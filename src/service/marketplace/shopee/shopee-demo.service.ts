@@ -3,10 +3,10 @@ import type { MarketplaceShopProfile, RealtimeMetrics, StreamHealth } from "../.
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let shopeeMetricsState: RealtimeMetrics = {
-  viewers: 620,
-  ordersPerMinute: 3.4,
-  conversionRate: 2.9,
-  gmv: 3200000,
+  viewers: 100,
+  ordersPerMinute: 8,
+  conversionRate: 8.1,
+  gmv: 32000000,
 };
 
 let shopeeHealthState: StreamHealth = {
@@ -21,7 +21,8 @@ const SHOPEE_METRICS_CONFIG = {
   viewersDelta: { min: -3, max: 4 },
   ordersPerMinuteDelta: { min: -1, max: 1, step: 0.1 },
   conversionDelta: { min: -1, max: 1, step: 0.02 },
-  gmvDelta: { min: -12000, max: 18000 },
+  // Keep realistic movement per 5s tick: mostly up, occasionally a small dip.
+  gmvDelta: { min: -5000, max: 70000 },
   smoothing: {
     viewers: 0.1,
     ordersPerMinute: 0.14,
@@ -61,12 +62,12 @@ export const getShopeeDemoShopProfile = async (): Promise<MarketplaceShopProfile
   await delay(420 + Math.floor(Math.random() * 520));
 
   if (Math.random() < 0.08) {
-    throw new Error("Shopee demo profile is temporarily unavailable.");
+    throw new Error("Shopee profile is temporarily unavailable.");
   }
 
   return {
     shopName: "eCentric Shopee Flagship",
-    description: "Demo profile - campaign oriented catalog for livestream conversion review.",
+    description: "Profile - campaign oriented catalog for livestream conversion review.",
     shopLogo: "",
   };
 };
@@ -93,8 +94,8 @@ export const getShopeeDemoMetrics = (): RealtimeMetrics => {
   );
   const nextGmvRaw = clamp(
     shopeeMetricsState.gmv + randomDelta(SHOPEE_METRICS_CONFIG.gmvDelta.min, SHOPEE_METRICS_CONFIG.gmvDelta.max),
-    1500000,
-    6800000,
+    28000000,
+    90000000,
   );
 
   shopeeMetricsState = {
@@ -158,5 +159,5 @@ export const getShopeeDemoStreamHealth = (): StreamHealth => {
 };
 
 export const generateShopeeDemoStreamUrl = (): string => {
-  return `rtmp://demo.shopee-live.local/session/${Math.random().toString(36).slice(2, 10)}`;
+  return `rtmp://shopee-live.local/session/${Math.random().toString(36).slice(2, 10)}`;
 };

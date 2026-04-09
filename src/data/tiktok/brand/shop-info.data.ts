@@ -4,5 +4,5 @@ export const tiktokBrandShopInfo: ShopInfo = {
   name: "eCentric TikTok Store",
   id: "VN_TIKTOK_2401",
   region: "Vietnam",
-  mode: "Demo / Mock API",
+  mode: "API",
 };

@@ -3,10 +3,10 @@ import type { MarketplaceShopProfile, RealtimeMetrics, StreamHealth } from "../.
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 let tiktokMetricsState: RealtimeMetrics = {
-  viewers: 980,
-  ordersPerMinute: 3.1,
-  conversionRate: 2.1,
-  gmv: 4100000,
+  viewers: 80,
+  ordersPerMinute: 4,
+  conversionRate: 7.5,
+  gmv: 41000000,
 };
 
 let tiktokHealthState: StreamHealth = {
@@ -21,7 +21,8 @@ const TIKTOK_METRICS_CONFIG = {
   viewersDelta: { min: -4, max: 5 },
   ordersPerMinuteDelta: { min: -1, max: 1, step: 0.1 },
   conversionDelta: { min: -1, max: 1, step: 0.015 },
-  gmvDelta: { min: -18000, max: 24000 },
+  // Keep realistic movement per 5s tick: mostly up, occasionally a small dip.
+  gmvDelta: { min: -6000, max: 90000 },
   smoothing: {
     viewers: 0.12,
     ordersPerMinute: 0.14,
@@ -63,12 +64,12 @@ export const getTiktokDemoShopProfile = async (): Promise<MarketplaceShopProfile
   await delay(3600 + Math.floor(Math.random() * 4600));
 
   if (Math.random() < 0.06) {
-    throw new Error("TikTok demo profile service timeout.");
+    throw new Error("TikTok profile service timeout.");
   }
 
   return {
     shopName: "eCentric TikTok Creator Shop",
-    description: "Demo profile - short-form traffic boosted livestream campaign.",
+    description: "Profile - short-form traffic boosted livestream campaign.",
     shopLogo: "",
   };
 };
@@ -95,8 +96,8 @@ export const getTiktokDemoMetrics = (): RealtimeMetrics => {
   );
   const nextGmvRaw = clamp(
     tiktokMetricsState.gmv + randomDelta(TIKTOK_METRICS_CONFIG.gmvDelta.min, TIKTOK_METRICS_CONFIG.gmvDelta.max),
-    2200000,
-    8600000,
+    35000000,
+    120000000,
   );
 
   tiktokMetricsState = {
@@ -165,5 +166,5 @@ export const getTiktokDemoStreamHealth = (): StreamHealth => {
 };
 
 export const generateTiktokDemoStreamUrl = (): string => {
-  return `rtmp://demo.tiktok-live.local/session/${Math.random().toString(36).slice(2, 10)}`;
+  return `rtmp://tiktok-live.local/session/${Math.random().toString(36).slice(2, 10)}`;
 };

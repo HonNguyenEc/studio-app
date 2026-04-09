@@ -8,15 +8,42 @@ type UseAuthHookArgs = {
   setAppError: (message: string) => void;
 };
 
+const AUTH_STORAGE_KEY = "ecentric_auth_session";
+
+type PersistedAuthSession = {
+  email: string;
+};
+
 export const useAuthHook = ({ demoAccounts, showToast, setAppError }: UseAuthHookArgs) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const getPersistedAuth = (): PersistedAuthSession | null => {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+    if (!raw) return null;
+
+    try {
+      const parsed = JSON.parse(raw) as Partial<PersistedAuthSession>;
+      if (!parsed.email) return null;
+      return { email: parsed.email };
+    } catch {
+      return null;
+    }
+  };
+
+  const getPersistedAccount = (): DemoAccount | null => {
+    const persisted = getPersistedAuth();
+    if (!persisted) return null;
+    return demoAccounts.find((account) => account.email === persisted.email) || null;
+  };
+
+  const persistedAccount = getPersistedAccount();
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(Boolean(persistedAccount));
   const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
   const [loginForm, setLoginForm] = useState<LoginForm>({
-    email: demoAccounts[0].email,
-    password: demoAccounts[0].password,
+    email: "",
+    password: "",
   });
   const [loginError, setLoginError] = useState<string>("");
-  const [currentUser, setCurrentUser] = useState<DemoAccount>(demoAccounts[0]);
+  const [currentUser, setCurrentUser] = useState<DemoAccount>(persistedAccount || demoAccounts[0]);
 
   const handleLogin = async () => {
     setAppError("");
@@ -31,12 +58,13 @@ export const useAuthHook = ({ demoAccounts, showToast, setAppError }: UseAuthHoo
       );
 
       if (!matched) {
-        setLoginError("Invalid demo account. Please use one of the accounts listed on the right.");
+        setLoginError("Invalid email or password.");
         return;
       }
 
       setCurrentUser(matched);
       setIsAuthenticated(true);
+      localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({ email: matched.email }));
       showToast("Login successful.", "success");
     } catch {
       setAppError("Login failed. Please try again.");
@@ -48,6 +76,7 @@ export const useAuthHook = ({ demoAccounts, showToast, setAppError }: UseAuthHoo
 
   const handleLogout = () => {
     setIsAuthenticated(false);
+    localStorage.removeItem(AUTH_STORAGE_KEY);
   };
 
   return {

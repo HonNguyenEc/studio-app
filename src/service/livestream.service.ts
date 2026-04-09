@@ -24,7 +24,7 @@ export const createMockSession = async (
 };
 
 export const generateMockStreamUrl = async (): Promise<string> => {
-  return `rtmp://demo-live.local/session/${Math.random().toString(36).slice(2, 10)}`;
+  return `rtmp://live.local/session/${Math.random().toString(36).slice(2, 10)}`;
 };
 
 export const generateMockStreamUrlByPlatform = async (platform: ManagementPlatform): Promise<string> => {
@@ -40,7 +40,7 @@ export const startMockStream = async (
   if (start && start > now) {
     return {
       blocked: true,
-      detail: `Stream is scheduled for ${scheduleStart}. Demo session stays in SCHEDULED state until that time.`,
+      detail: `Stream is scheduled for ${scheduleStart}. Session stays in SCHEDULED state until that time.`,
     };
   }
 

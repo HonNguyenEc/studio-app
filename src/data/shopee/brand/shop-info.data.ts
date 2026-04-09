@@ -4,5 +4,5 @@ export const shopeeBrandShopInfo: ShopInfo = {
   name: "eCentric Store",
   id: "VN_SHOP_2401",
   region: "Vietnam",
-  mode: "Demo / Mock API",
+  mode: "API",
 };

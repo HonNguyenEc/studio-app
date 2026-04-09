@@ -1,6 +1,6 @@
 # eCentric Studio
 
-Livestream demo studio built with React + TypeScript + Vite.
+Livestream studio built with React + TypeScript + Vite.
 
 ## Architecture Rules (Required)
 
@@ -22,9 +22,9 @@ Full rulebook: **`docs/architecture-rules.md`**
 
 ## Environment
 
-Current default flow runs in **Demo Mode** and does not require real marketplace credentials.
+Current default flow runs in ** Mode** and does not require real marketplace credentials.
 
-You can still keep `.env` for local configuration, but this demo should not use real partner/shop/customer data.
+You can still keep `.env` for local configuration, but this should not use real partner/shop/customer data.
 
 ### OBS Local (WebSocket)
 
@@ -72,11 +72,11 @@ Before requesting real platform API permissions, prepare:
 - Privacy Policy / Terms / Data Deletion URL
 - Feature-to-scope mapping document (least privilege)
 - Security note (token storage/rotation/revoke, audit logs)
-- Demo script/video for reviewer (authorize → use feature → revoke)
+- script/video for reviewer (authorize → use feature → revoke)
 
-## Demo Scope & Safety
+## Scope & Safety
 
 - This project is a UI/UX + workflow prototype with **mock behavior only**.
-- Shopee and TikTok are now separated in demo logic (profile, stream URL pattern, comment cadence, metrics behavior).
-- No production API call is required in the default demo flow.
+- Shopee and TikTok are now separated in logic (profile, stream URL pattern, comment cadence, metrics behavior).
+- No production API call is required in the default flow.
 - Do not place real credentials or personal/customer information in this repository.

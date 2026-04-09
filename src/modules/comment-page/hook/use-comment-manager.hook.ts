@@ -83,7 +83,7 @@ export const useCommentManagerHook = ({
     try {
       const comment = await getMockIncomingComment(managementPlatform);
       setComments((prev) => [...prev, comment]);
-      addLog(`${managementPlatform} comments refreshed`, "Pulled 1 mock comment from platform demo source.");
+      addLog(`${managementPlatform} comments refreshed`, "Pulled 1 mock comment from platform source.");
       showToast("Comments refreshed.", "info");
     } catch {
       setAppError("Failed to refresh comments.");

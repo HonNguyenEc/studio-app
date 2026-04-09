@@ -29,15 +29,15 @@ export const demoAccounts: DemoAccount[] = [
   {
     id: 1,
     role: "Admin",
-    email: "admin@ecentric.demo",
+    email: "admin@ecentric.com",
     password: "123456",
-    name: "Bia Admin",
+    name: "Livestream Admin",
     shopName: "eCentric Store",
   },
   {
     id: 2,
     role: "Operator",
-    email: "operator@ecentric.demo",
+    email: "operator@ecentric.com",
     password: "123456",
     name: "Livestream Operator",
     shopName: "eCentric Store",

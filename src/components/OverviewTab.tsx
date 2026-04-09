@@ -149,12 +149,12 @@ export default function OverviewTab({
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <div>
             <div className={`mb-2 inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold ${darkMode ? "border border-white/10 bg-white/5 text-white" : "border border-slate-200 bg-slate-100 text-slate-700"}`}>
-              <Radio className="h-3.5 w-3.5" /> {managementPlatform} Demo Console
+              <Radio className="h-3.5 w-3.5" /> {managementPlatform} Console
             </div>
             <h2 className={`text-3xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>Livestream Management</h2>
-            <p className={`mt-1 text-sm ${darkMode ? "text-white/55" : "text-slate-500"}`}>
+            {/* <p className={`mt-1 text-sm ${darkMode ? "text-white/55" : "text-slate-500"}`}>
               Demo only · No real marketplace credential or customer data.
-            </p>
+            </p> */}
           </div>
           <div className="flex items-center gap-3">
             <div className={`rounded-2xl border px-4 py-3 text-right ${darkMode ? "border-white/10 bg-slate-900/50" : "border-slate-200 bg-slate-50"}`}>
@@ -191,12 +191,12 @@ export default function OverviewTab({
           </div>
 
           <div className={`rounded-2xl border p-4 ${darkMode ? "border-white/10 bg-slate-900/45" : "border-slate-200 bg-slate-50"}`}>
-            <div className={`mb-2 text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>Demo Notice</div>
-            <ul className={`space-y-1 text-xs ${darkMode ? "text-white/65" : "text-slate-600"}`}>
+            <div className={`mb-2 text-sm font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>Notice</div>
+            {/* <ul className={`space-y-1 text-xs ${darkMode ? "text-white/65" : "text-slate-600"}`}>
               <li>• Platform-specific behavior is simulated for review.</li>
               <li>• No token refresh / no external API call in this demo flow.</li>
               <li>• Data changes automatically to mimic production operations.</li>
-            </ul>
+            </ul> */}
           </div>
         </div>
 
@@ -433,11 +433,11 @@ export default function OverviewTab({
 
       <Card darkMode={darkMode}>
         <div className={`mb-4 flex items-center gap-2 text-xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>
-          <ShieldCheck className="h-5 w-5 text-emerald-400" /> Demo Notes
+          <ShieldCheck className="h-5 w-5 text-emerald-400" /> Notes
         </div>
         <ul className={`space-y-2 text-sm ${darkMode ? "text-white/70" : "text-slate-600"}`}>
           <li>• Current account: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{currentUser?.name}</span> ({currentUser?.role}).</li>
-          <li>• {managementPlatform} behavior (comments cadence, stream URL, metrics) is platform-specific demo logic.</li>
+          <li>• {managementPlatform} behavior (comments cadence, stream URL, metrics) is platform-specific logic.</li>
           <li>• No real customer/shop data is used in this environment.</li>
         </ul>
       </Card>

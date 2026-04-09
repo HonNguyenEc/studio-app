@@ -8,7 +8,7 @@ import type {
 import { getMarketplaceDemoAdapter } from "../../../service/marketplace/adapter/marketplace-demo.adapter";
 
 const REALTIME_SYNC_CONFIG = {
-  pollIntervalMs: 30000,
+  pollIntervalMs: 5000,
 } as const;
 
 type UseMarketplaceLiveSyncHookArgs = {
@@ -56,7 +56,7 @@ export const useMarketplaceLiveSyncHook = ({ managementPlatform, addLog }: UseMa
       } catch {
         if (isDisposed) return;
         setMarketplaceShopProfile(null);
-        addLog(`${managementPlatform} profile`, `Failed to load ${managementPlatform} profile from demo adapter.`, {
+        addLog(`${managementPlatform} profile`, `Failed to load ${managementPlatform} profile from adapter.`, {
           platform: managementPlatform,
           result: "error",
           errorCode: "PROFILE_LOAD_FAILED",

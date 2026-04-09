@@ -78,7 +78,7 @@ export const useProductManagerHook = ({
       });
 
       setHiddenProducts((prev) => prev.slice(1));
-      addLog("Product added", `${next.name} added to demo product list.`);
+      addLog("Product added", `${next.name} added to product list.`);
       showToast(`${next.name} added.`, "success");
     } catch {
       setAppError("Failed to add product.");
@@ -94,7 +94,7 @@ export const useProductManagerHook = ({
     try {
       const applied = await applyProductSet(selectedProducts);
       setAppliedProductIds(applied);
-      addLog("Product set applied", `${applied.length} product(s) added to current demo set.`);
+      addLog("Product set applied", `${applied.length} product(s) added to current set.`);
       showToast("Product set applied.", "success");
     } catch {
       setAppError("Failed to apply product set.");
@@ -122,7 +122,7 @@ export const useProductManagerHook = ({
     setAppliedProductIds((prev) => prev.filter((x) => x !== targetId));
 
     const product = products.find((p) => p.id === targetId);
-    addLog("Product removed", `${product?.name || `#${targetId}`} removed from current demo selection.`);
+    addLog("Product removed", `${product?.name || `#${targetId}`} removed from current selection.`);
   };
 
   return {
