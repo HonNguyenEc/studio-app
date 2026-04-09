@@ -4,6 +4,7 @@ import type { ObsConfig, ObsSessionState, PlatformKey } from "../common/type/app
 type ObsListener = (state: ObsSessionState) => void;
 
 const RECONNECT_DELAYS_MS = [1000, 2000, 4000, 8000, 12000];
+const MAX_RECONNECT_ATTEMPTS = RECONNECT_DELAYS_MS.length;
 
 type ObsRuntime = {
   client: OBSWebSocket;
@@ -41,6 +42,39 @@ const clearReconnectTimer = (runtime: ObsRuntime) => {
   runtime.reconnectTimer = null;
 };
 
+const scheduleReconnect = (platform: PlatformKey, runtime: ObsRuntime) => {
+  if (!runtime.shouldReconnect) return;
+
+  if (runtime.reconnectAttempt >= MAX_RECONNECT_ATTEMPTS) {
+    runtime.shouldReconnect = false;
+    patchState(platform, {
+      connectionStatus: "error",
+      lastError: "OBS reconnect limit reached. Please reconnect manually.",
+    });
+    return;
+  }
+
+  const nextAttempt = runtime.reconnectAttempt + 1;
+  const delay = RECONNECT_DELAYS_MS[Math.min(runtime.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1)];
+  runtime.reconnectAttempt = nextAttempt;
+
+  patchState(platform, {
+    connectionStatus: "reconnecting",
+    lastError: `OBS disconnected. Reconnecting (attempt ${nextAttempt}/${MAX_RECONNECT_ATTEMPTS})...`,
+  });
+  clearReconnectTimer(runtime);
+
+  runtime.reconnectTimer = setTimeout(() => {
+    void runInPlatformQueue(platform, async () => {
+      try {
+        await runtime.client.connect(runtime.config.url, runtime.config.password || undefined);
+      } catch {
+        scheduleReconnect(platform, runtime);
+      }
+    });
+  }, delay);
+};
+
 const runInPlatformQueue = async <T>(platform: PlatformKey, task: () => Promise<T>): Promise<T> => {
   const previous = queueByPlatform.get(platform) || Promise.resolve();
   const current = previous.then(task, task);
@@ -61,29 +95,14 @@ const attachObsListeners = (platform: PlatformKey, runtime: ObsRuntime) => {
     patchState(platform, {
       connectionStatus: "disconnected",
       isStreaming: false,
+      availableScenes: [],
     });
 
     if (!runtime.shouldReconnect) {
       return;
     }
 
-    const delay = RECONNECT_DELAYS_MS[Math.min(runtime.reconnectAttempt, RECONNECT_DELAYS_MS.length - 1)];
-    runtime.reconnectAttempt += 1;
-    patchState(platform, { connectionStatus: "reconnecting" });
-    clearReconnectTimer(runtime);
-
-    runtime.reconnectTimer = setTimeout(() => {
-      void runInPlatformQueue(platform, async () => {
-        try {
-          await runtime.client.connect(runtime.config.url, runtime.config.password || undefined);
-        } catch {
-          patchState(platform, {
-            connectionStatus: "error",
-            lastError: `Reconnect failed (attempt ${runtime.reconnectAttempt}).`,
-          });
-        }
-      });
-    }, delay);
+    scheduleReconnect(platform, runtime);
   });
 
   runtime.client.on("CurrentProgramSceneChanged", (event: { sceneName?: string }) => {
@@ -119,6 +138,7 @@ const getOrCreateRuntime = (platform: PlatformKey, config: ObsConfig): ObsRuntim
       isStreaming: false,
       programSceneName: "",
       previewSceneName: "",
+      availableScenes: [],
       lastError: "",
     },
   };
@@ -161,6 +181,18 @@ export const subscribeObsState = (platform: PlatformKey, listener: ObsListener):
 export const connectObs = (platform: PlatformKey, config: ObsConfig): Promise<ObsSessionState> => {
   return runInPlatformQueue(platform, async () => {
     const runtime = getOrCreateRuntime(platform, config);
+    runtime.config = config;
+
+    if (
+      runtime.state.connectionStatus === "connected"
+      || runtime.state.connectionStatus === "connecting"
+      || runtime.state.connectionStatus === "reconnecting"
+    ) {
+      return { ...runtime.state };
+    }
+
+    clearReconnectTimer(runtime);
+    runtime.reconnectAttempt = 0;
     runtime.shouldReconnect = true;
     patchState(platform, { connectionStatus: "connecting", lastError: "" });
 
@@ -168,6 +200,9 @@ export const connectObs = (platform: PlatformKey, config: ObsConfig): Promise<Ob
       await runtime.client.connect(config.url, config.password || undefined);
       const streamStatus = await runtime.client.call("GetStreamStatus");
       const scene = await runtime.client.call("GetCurrentProgramScene");
+      const sceneList = (await runtime.client.call("GetSceneList")) as {
+        scenes?: Array<{ sceneName?: string }>;
+      };
 
       let previewSceneName = "";
       try {
@@ -182,6 +217,9 @@ export const connectObs = (platform: PlatformKey, config: ObsConfig): Promise<Ob
         isStreaming: Boolean(streamStatus.outputActive),
         programSceneName: scene.currentProgramSceneName || "",
         previewSceneName,
+        availableScenes: (sceneList.scenes || [])
+          .map((item) => item.sceneName || "")
+          .filter((name): name is string => Boolean(name)),
         lastError: "",
       });
       return { ...runtime.state };
@@ -190,6 +228,9 @@ export const connectObs = (platform: PlatformKey, config: ObsConfig): Promise<Ob
         connectionStatus: "error",
         lastError: "Failed to connect OBS WebSocket.",
       });
+      runtime.shouldReconnect = false;
+      runtime.reconnectAttempt = 0;
+      clearReconnectTimer(runtime);
       throw new Error("Failed to connect OBS WebSocket.");
     }
   });
@@ -205,6 +246,7 @@ export const disconnectObs = (platform: PlatformKey): Promise<ObsSessionState> =
     patchState(platform, {
       connectionStatus: "disconnected",
       isStreaming: false,
+      availableScenes: [],
       lastError: "",
     });
     return { ...runtime.state };

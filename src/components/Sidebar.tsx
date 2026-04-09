@@ -66,7 +66,7 @@ export default function Sidebar({
               <div className={`text-2xl font-bold tracking-tight ${darkMode ? "text-white" : "text-[#2C3DA6]"}`}>
                 eCentric Studio
               </div>
-              <div className={`text-xs ${darkMode ? "text-white/50" : "text-slate-500"}`}>Demo Mode · Mock API</div>
+              <div className={`text-xs ${darkMode ? "text-white/50" : "text-slate-500"}`}> Mock API</div>
             </div>
           ) : null}
         </div>
@@ -120,7 +120,7 @@ export default function Sidebar({
           <div className={`mb-4 rounded-3xl border p-4 ${darkMode ? "border-[#2C3DA6]/30 bg-gradient-to-br from-[#2C3DA6]/20 to-[#EF7CAF]/10" : "border-[#2C3DA6]/15 bg-gradient-to-br from-[#2C3DA6]/8 to-[#EF7CAF]/10"}`}>
             <div className="mb-3 flex items-start justify-between gap-3">
               <div className={`flex items-center gap-2 pt-1 text-sm font-semibold ${darkMode ? "text-indigo-200" : "text-[#2C3DA6]"}`}>
-                <BadgeCheck className="h-4 w-4" /> Demo Environment
+                <BadgeCheck className="h-4 w-4" /> Environment
               </div>
               <span className={`inline-flex min-h-[44px] items-center rounded-full px-4 py-2 text-center text-xs font-semibold leading-tight ${darkMode ? "border border-emerald-400/20 bg-emerald-400/10 text-emerald-300" : "border border-emerald-500/15 bg-emerald-500/10 text-emerald-700"}`}>
                 Ready for Review

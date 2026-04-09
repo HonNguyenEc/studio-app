@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import type { LogItem, ManagementPlatform, ToastState } from "../type/app.type";
 
 type LogMeta = {
@@ -13,7 +13,7 @@ export const useFeedbackHook = () => {
   const [toast, setToast] = useState<ToastState | null>(null);
   const [logs, setLogs] = useState<LogItem[]>([]);
 
-  const addLog = (action: string, detail: string, meta?: LogMeta) => {
+  const addLog = useCallback((action: string, detail: string, meta?: LogMeta) => {
     setLogs((prev) => [
       ...prev,
       {
@@ -27,14 +27,14 @@ export const useFeedbackHook = () => {
         requestId: meta?.requestId,
       },
     ]);
-  };
+  }, []);
 
-  const showToast = (
+  const showToast = useCallback((
     message: string,
     type: ToastState["type"] = "success"
   ) => {
     setToast({ message, type });
-  };
+  }, []);
 
   useEffect(() => {
     if (!toast) return;

@@ -1,4 +1,4 @@
-import { LogIn, MoonStar, ShieldCheck, Sun } from "lucide-react";
+import { LogIn, MoonStar, Sun } from "lucide-react";
 import type { DemoAccount, LoginForm } from "../common/type/app.type";
 
 type LoginScreenProps = {
@@ -21,7 +21,6 @@ export default function LoginScreen({
   setLoginForm,
   onLogin,
   loginError,
-  demoAccounts,
   logoSrc,
 }: LoginScreenProps) {
   return (
@@ -33,13 +32,14 @@ export default function LoginScreen({
       }
     >
       <div className="flex min-h-screen items-center justify-center p-6">
-        <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className={`rounded-[28px] border p-8 shadow-2xl ${darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white/85"}`}>
+        {/* <div className="grid w-full max-w-6xl gap-6 lg:grid-cols-[1.05fr_0.95fr]"> */}
+        <div className="grid w-full max-w-6xl gap-6 justify-center ">
+          <div className={`rounded-[28px]  max-w-3xl border p-8 shadow-2xl ${darkMode ? "border-white/10 bg-white/5" : "border-slate-200 bg-white/85"}`}>
             <div className="mb-8 flex items-center gap-4">
               <img src={logoSrc} alt="eCentric logo" className="h-16 w-16 rounded-3xl bg-white p-1.5 shadow-sm" />
               <div>
                 <div className={`text-3xl font-bold ${darkMode ? "text-white" : "text-[#2C3DA6]"}`}>eCentric Studio</div>
-                <div className={`${darkMode ? "text-white/55" : "text-slate-500"}`}>Shopee Livestream Demo Portal</div>
+                <div className={`${darkMode ? "text-white/55" : "text-slate-500"}`}>Shopee Livestream Portal</div>
               </div>
               <button
                 onClick={() => setDarkMode((prev) => !prev)}
@@ -53,7 +53,7 @@ export default function LoginScreen({
               <LogIn className="h-3.5 w-3.5" /> Demo Login
             </div>
 
-            <h1 className={`text-4xl font-bold leading-tight ${darkMode ? "text-white" : "text-slate-900"}`}>Login to manage the livestream demo environment</h1>
+            <h1 className={`text-4xl font-bold leading-tight ${darkMode ? "text-white" : "text-slate-900"}`}>Login to manage the livestream</h1>
             <p className={`mt-3 text-base ${darkMode ? "text-white/60" : "text-slate-500"}`}>Use one of the demo accounts below to enter the system and show account-based management flow.</p>
 
             <div className="mt-8 grid gap-4">
@@ -90,12 +90,12 @@ export default function LoginScreen({
                     isLoggingIn ? "cursor-not-allowed bg-[#2C3DA6]/60" : "bg-[#2C3DA6] hover:opacity-95"
                 }`}
                 >
-                {isLoggingIn ? "Logging in..." : "Login to Demo Portal"}
+                {isLoggingIn ? "Logging in..." : "Login to Portal"}
                 </button>
             </div>
           </div>
-
-          <div className={`rounded-[28px] border p-8 shadow-2xl ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white/85"}`}>
+              {/* demo account */}
+          {/* <div className={`rounded-[28px] border p-8 shadow-2xl ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white/85"}`}>
             <div className={`mb-4 flex items-center gap-2 text-xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>
               <ShieldCheck className="h-5 w-5 text-emerald-400" /> Demo Accounts
             </div>
@@ -114,7 +114,8 @@ export default function LoginScreen({
                 </div>
               ))}
             </div>
-          </div>
+          </div> */}
+
         </div>
       </div>
     </div>

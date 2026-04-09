@@ -51,6 +51,7 @@ export type ObsSessionState = {
   connectionStatus: ObsConnectionStatus;
   programSceneName: string;
   previewSceneName: string;
+  availableScenes: string[];
   isStreaming: boolean;
   lastError: string;
 };

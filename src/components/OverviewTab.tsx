@@ -257,13 +257,25 @@ export default function OverviewTab({
           </div>
 
           <div className="mt-3 grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto]">
-            <input
-              type="text"
+            <select
               value={obsSceneDraft}
               onChange={(e) => onObsSceneNameChange(e.target.value)}
-              placeholder="Program scene name"
+              disabled={obsSessionState.connectionStatus !== "connected"}
               className={`w-full rounded-2xl border px-3 py-3 text-sm outline-none ${darkMode ? "border-white/10 bg-slate-900/70 text-white" : "border-slate-200 bg-white text-slate-800"}`}
-            />
+            >
+              <option value="">
+                {obsSessionState.connectionStatus !== "connected"
+                  ? "Connect OBS to load scene list"
+                  : obsSessionState.availableScenes.length === 0
+                    ? "No scene found from OBS"
+                    : "Select program scene"}
+              </option>
+              {obsSessionState.availableScenes.map((sceneName) => (
+                <option key={sceneName} value={sceneName}>
+                  {sceneName}
+                </option>
+              ))}
+            </select>
             <button
               onClick={onSwitchObsScene}
               disabled={isSwitchingScene || obsSessionState.connectionStatus !== "connected"}
@@ -292,6 +304,11 @@ export default function OverviewTab({
         <div className="grid gap-6 xl:grid-cols-[420px_minmax(0,1fr)]">
           <div className={`rounded-3xl border p-5 ${darkMode ? "border-white/10 bg-black/20" : "border-slate-200 bg-white/70"}`}>
             <div className={`mb-4 text-xl font-bold ${darkMode ? "text-white" : "text-slate-900"}`}>Session Controls</div>
+            {obsSessionState.connectionStatus === "connected" ? (
+              <div className={`mb-3 rounded-2xl border px-3 py-2 text-xs ${darkMode ? "border-white/10 bg-slate-900/40 text-white/75" : "border-slate-200 bg-slate-50 text-slate-600"}`}>
+                OBS Program Scene: <span className={`font-semibold ${darkMode ? "text-white" : "text-slate-900"}`}>{obsSessionState.programSceneName || "--"}</span>
+              </div>
+            ) : null}
             <div className="overflow-hidden rounded-3xl bg-gradient-to-b from-[#EF7CAF] to-[#2C3DA6] shadow-2xl">
               {coverPreview ? (
                 <img src={coverPreview} alt="cover" className="h-[520px] w-full object-cover" />

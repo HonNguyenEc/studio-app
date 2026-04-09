@@ -32,7 +32,7 @@ export const demoAccounts: DemoAccount[] = [
     email: "admin@ecentric.demo",
     password: "123456",
     name: "Bia Admin",
-    shopName: "eCentric Demo Store",
+    shopName: "eCentric Store",
   },
   {
     id: 2,
@@ -40,7 +40,7 @@ export const demoAccounts: DemoAccount[] = [
     email: "operator@ecentric.demo",
     password: "123456",
     name: "Livestream Operator",
-    shopName: "eCentric Demo Store",
+    shopName: "eCentric Store",
   },
 ];
 

@@ -18,6 +18,12 @@ import {
 import { shopInfoByPlatform } from "../common/constant/shop-info.constant";
 import { managementPlatformOptions } from "../common/constant/management-platform.constant";
 import type { ActiveTab, ManagementPlatform } from "../common/type/app.type";
+import {
+  buildCommentRouteProps,
+  buildProductRouteProps,
+  buildReportRouteProps,
+  buildStudioRouteProps,
+} from "./util/build-route-props.util";
 
 export default function App() {
   const [darkMode, setDarkMode] = useState<boolean>(true);
@@ -62,83 +68,29 @@ export default function App() {
     setActiveTab("overview");
   };
 
-  const studioProps = {
-    coverPreview: session.coverPreview,
-    onCoverChange: session.onCoverChange,
-    sessionState: session.sessionState,
-    onCreateSession: session.onCreateSession,
-    onStartStream: session.onStartStream,
-    onEndStream: session.onEndStream,
-    onGenerateUrl: session.onGenerateUrl,
-    streamUrl: session.streamUrl,
-    selectedProducts: product.selectedProductObjects,
-    visibleProductId: product.visibleProductId,
+  const studioProps = buildStudioRouteProps({
+    darkMode,
+    session,
+    product,
     logs,
     shopInfo,
-    onCopyStreamUrl: session.onCopyStreamUrl,
-    darkMode,
-    scheduleStart: session.scheduleStart,
-    scheduleEnd: session.scheduleEnd,
-    setScheduleStart: session.setScheduleStart,
-    setScheduleEnd: session.setScheduleEnd,
     currentUser: auth.currentUser,
-    isScheduleRangeInvalid: session.isScheduleRangeInvalid,
-    isCreatingSession: session.isCreatingSession,
-    isGeneratingUrl: session.isGeneratingUrl,
-    isStartingStream: session.isStartingStream,
-    isEndingStream: session.isEndingStream,
-    isConnectingObs: session.isConnectingObs,
-    isSwitchingScene: session.isSwitchingScene,
-    obsConfig: session.obsConfig,
-    obsSessionState: session.obsSessionState,
-    obsSceneDraft: session.obsSceneDraft,
-    onObsConfigChange: session.onObsConfigChange,
-    onConnectObs: session.onConnectObs,
-    onDisconnectObs: session.onDisconnectObs,
-    onSwitchObsScene: session.onSwitchObsScene,
-    onObsSceneNameChange: session.onObsSceneNameChange,
-    marketplaceShopProfile: session.marketplaceShopProfile,
-    isLoadingMarketplaceShopProfile: session.isLoadingMarketplaceShopProfile,
-    realtimeMetrics: session.realtimeMetrics,
-    streamHealth: session.streamHealth,
     managementPlatform,
-  };
+  });
 
-  const productProps = {
+  const productProps = buildProductRouteProps({
     darkMode,
-    products: product.products,
-    selectedProducts: product.selectedProducts,
-    toggleProduct: product.toggleProduct,
-    applySet: product.applySet,
-    visibleProductId: product.visibleProductId,
-    showProduct: product.showProduct,
-    removeProduct: product.removeProduct,
-    addProduct: product.addProduct,
-    appliedProductIds: product.appliedProductIds,
-    allSelected: product.allSelected,
-    handleSelectAllProducts: product.handleSelectAllProducts,
-    isAddingProduct: product.isAddingProduct,
-    isApplyingSet: product.isApplyingSet,
-  };
+    product,
+  });
 
-  const commentProps = {
+  const commentProps = buildCommentRouteProps({
     darkMode,
-    comments: comment.comments,
-    draftComment: comment.draftComment,
-    setDraftComment: comment.setDraftComment,
-    sendComment: comment.sendComment,
-    refreshComments: comment.refreshComments,
-    autoRefresh: comment.autoRefresh,
-    setAutoRefresh: comment.setAutoRefresh,
+    comment,
     currentUser: auth.currentUser,
-    isRefreshingComments: comment.isRefreshingComments,
-    isSendingComment: comment.isSendingComment,
     managementPlatform,
-  };
+  });
 
-  const reportProps = {
-    darkMode,
-  };
+  const reportProps = buildReportRouteProps(darkMode);
 
   if (!auth.isAuthenticated) {
     return (
