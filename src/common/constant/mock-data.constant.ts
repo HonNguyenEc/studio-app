@@ -35,6 +35,14 @@ export const demoAccounts: DemoAccount[] = [
     shopName: "eCentric Store",
   },
   {
+    id: 3,
+    role: "Admin",
+    email: "shopee@ecentric.com",
+    password: "123456",
+    name: "Livestream Shopee",
+    shopName: "Shopee Store",
+  },
+  {
     id: 2,
     role: "Operator",
     email: "operator@ecentric.com",
